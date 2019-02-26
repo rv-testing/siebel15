@@ -1,0 +1,6 @@
+---
+ansible_user: user1@TEST007.ORG             
+ansible_connection: winrm
+ansible_winrm_transport: kerberos
+ansible_port: 5985
+ansible_password: Clark123456

@@ -1,0 +1,25 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+export JAVA_HOME={{siebweb_java_path}}/
+
+PATH=$JAVA_HOME/bin:$PATH:$HOME/.local/bin:$HOME/bin
+
+export PATH
+
+export ORACLE_BASE={{oracle_base}}
+export ORACLE_HOME=$ORACLE_BASE/product/11.2.0/client32 
+export PATH=$PATH:$ORACLE_HOME/bin:$ORACLE_HOME/bin/lib:{{ses_gtwysrvr_path}}/bin
+export LD_LIBRARY_PATH=/usr/lib:$LD_LIBRARY_PATH:$ORACLE_HOME/lib
+
+
+export RESOLV_MULTI=off
+alias srvrmgr="srvrmgr -g {{hostvars[groups['ses_linux'][0]].ansible_fqdn}}:{{ses_gateway_NamesrvrPortPick}} -e "SBLSIT1" -u sadmin -p TsoTso1"
+alias cdlogs="cd {{siebel_siebsrvr}}/enterprises/SBLSIT1/SBLSIT1/log"
+alias cdsiebsrvr="cd {{siebel_siebsrvr}}"
+. {{siebel_siebsrvr}}/{{ses_gateway_siebenv_sh}}

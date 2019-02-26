@@ -1,0 +1,20 @@
+---
+- name: variable precedence test
+  hosts: bip_linux
+  tasks:
+    - include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "group_vars/{{ env }}/vault.yml"
+        - "group_vars/{{ env }}/vars.yml"
+
+- name: Create Pre-requisites
+  hosts: bip_linux
+  become_user: "{{super_user}}"
+  any_errors_fatal: True
+  roles:
+    - common
+  vars:
+    create_full_filesystem: True
+    app_user_create: True
+    download_library_yum: False

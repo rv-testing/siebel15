@@ -1,0 +1,100 @@
+Tower notes!
+
+
+projects git 
+need check on clean, delete on update and update on launch (only on the first run)
+uncheck delete on update
+
+on linux2 inventory sources check overwrite/ovderwrite variables/update on launch
+
+on linux inventory sources check overwrite/ovderwrite variables/update on launch
+
+Run validation1, click update on the scm, then update the inventories linux and linux2.
+Check if the inventories are fine.
+
+Go ahead with validation2 and validation3.
+
+testing at home!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk,Check-Host-ip
+vm4,vm2,22,192.168.3.132,1,0.953384,21.5,192.168.3.135
+vm2,vm4,80,192.168.3.135,1,0.953384,21.5,192.168.3.132
+,vm1,22,,,,,192.168.3.132
+vm3,,,192.168.3.130,1,0.953384,21.5,
+
+testing at home!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+testing at work !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk,Check-Host-ip
+SDCGISAZAPMDW02,SDCGISAZAPMDW03,9000,10.193.177.95,1,2,60,10.193.177.96
+SDCGISAZAPMDW03,SDCGISAZAPMDW02,8000,10.193.177.96,1,2,21.5,10.193.177.95
+
+Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk,Check-Host-ip
+sdcgisazapmdw05,sdcgisazapmdw06,22,10.193.177.215,2,3.84256,296.3,10.193.177.216
+sdcgisazapmdw06,sdcgisazapmdw05,80,10.193.177.216,1,0.953384,21.5,10.193.177.215
+
+
+testing at work !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+windows!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk,Check-Host-ip
+win2,win3,9000,192.168.3.135,1,2,60,192.168.3.118
+win3,win2,8000,192.168.3.118,1,2,21.5,192.168.3.135
+
+Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk,Check-Host-ip
+winserv1,win2,9000,192.168.122.11,1,2,60,192.168.122.213
+win2,winserv1,8000,192.168.122.213,1,2,21.5,192.168.122.11
+
+
+
+[windows:vars]
+ansible_user=user1@TEST007.ORG
+ansible_password=xxxxxxxx
+ansible_connection=winrm
+ansible_winrm_transport=kerberos
+ansible_port=5985
+ansible_winrm_kinit_mode=manual
+#@work!
+[windows]
+10.193.177.95 ansible_host=sdcgisazapmdw10
+
+[windows:vars]
+ansible_user=user1@TEST007.ORG
+ansible_password=xxxxxxxx
+ansible_connection=winrm
+ansible_winrm_transport=kerberos
+ansible_port=5985
+ansible_winrm_kinit_mode=manual
+
+  tasks: 
+        - name: kinit
+          local_action: command echo "Clark123456" | kinit -l 7d -r 7d -pf user1@TEST001.ORG
+
+#!/bin/bash
+rm -f comma.csv
+n=$(cat windows.csv | wc -l)
+for (( c=1; c<=n; c++)) ; do echo ",">> comma.csv ; done
+
+!merge two files to add comma at the end
+#!/usr/bin/python
+with open('./windows.csv') as f1, open('./comma.csv') as f2:
+    print '\n'.join((a.rstrip() + b.rstrip() for a, b in zip(f1, f2)))
+
+
+windows!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!test.yml
+---
+- hosts: all
+  become: false
+  tasks: 
+        - name: ping
+          win_ping:
+
+!UPPER
+#!/usr/bin/python
+import os, sys
+with open(sys.argv[1], "r+b") as file:
+    content = file.read()
+    file.seek(0)
+    file.write(content.upper())

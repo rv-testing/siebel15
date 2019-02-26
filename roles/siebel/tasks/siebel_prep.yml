@@ -1,0 +1,93 @@
+---
+  
+- name:             Install pre-requisites
+  yum:              name={{item}} state=present
+  with_items: 
+                    - "{{siebweb_dependencies}}"
+  when:             (ansible_distribution == "RedHat") or (ansible_distribution == "CentOS")
+  
+- name:             Create Folders for seibel web ext installation
+  file:             path={{ item }} mode=0755 state=directory
+  with_items: 
+                    - "{{siebweb_directories}}"                                       
+    
+          
+- name:          Is java installed?
+  stat:
+    path:        "{{ siebweb_java_path }}/"
+  register:      siebweb_java_installed
+  
+- name:           Download java file
+  get_url:
+    url:          "{{ siebel_java_url }}{{ siebweb_java_zip }}"
+    dest:         "{{ app_dir }}/{{ siebweb_java_zip }}"
+    mode:         0755
+  when:           siebweb_java_installed.stat.exists == false
+
+- name:           Extract java file
+  unarchive:
+    src:          "{{ app_dir }}/{{ siebweb_java_zip }}"
+    dest:         "{{ app_dir }}/"
+    copy:         no
+  when:           siebweb_java_installed.stat.exists == false
+  
+  
+
+- name:          Is siebel folder 15000zip installed?
+  stat:
+    path:        "{{ siebweb_sfw }}/{{ siebweb_install_folder }}"
+  register:      siebel_installed
+
+- name:           Download siebel 15000zip file
+  get_url:
+    url:          "{{ siebel_repository_url }}{{ siebweb_zip }}"
+    dest:         "{{ siebweb_sfw }}/{{ siebweb_zip }}"
+    mode:         0755
+  when:           siebel_installed.stat.exists == false
+
+- name:           Extract siebel 15000zip file
+  unarchive:
+    src:          "{{ siebweb_sfw }}/{{ siebweb_zip }}"
+    dest:         "{{ siebweb_sfw }}/"
+    copy:         no
+  when:           siebel_installed.stat.exists == false
+  
+  
+  
+- name:          Is siebel patch folder installed?
+  stat:
+    path:        "{{ siebweb_sfw }}/{{ siebel_patch_folder }}"
+  register:      siebel_patch_installed  
+  
+- name:           Download siebel patchzip file
+  get_url:
+    url:          "{{ siebel_patch_url }}{{ siebweb_patch_zip }}"
+    dest:         "{{ siebweb_sfw }}/{{ siebweb_patch_zip }}"
+    mode:         0755
+  when:           siebel_patch_installed.stat.exists == false
+
+- name:           Extract siebel patchzip file
+  unarchive:
+    src:          "{{ siebweb_sfw }}/{{ siebweb_patch_zip }}"
+    dest:         "{{ siebweb_sfw }}/"
+    copy:         no
+  when:           siebel_patch_installed.stat.exists == false  
+    
+    
+    
+- name:           Building the oraInst.loc template
+  template:
+    src:          "{{siebweb_orainst_j2}}"
+    dest:         "{{siebweb_orainventory}}/{{siebweb_orainst}}"     
+                
+    
+- name:          chmod & chgrp to {{app_dir}}
+  shell:         "chmod 0755 -R {{app_dir}} && chown -R {{app_user}}:{{app_group}} {{app_dir}}/"
+  
+- name:           chmod and chown to user and group oraInst.loc
+  file:
+    path:         "{{siebweb_orainventory}}/{{siebweb_orainst}}"
+    owner:        "{{app_user}}"
+    group:        "{{app_group}}"
+    mode:         0660                              
+    

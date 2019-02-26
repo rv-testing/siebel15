@@ -1,0 +1,7 @@
+---
+
+- name: Start websphere profile
+  shell: "/bin/sh {{ was_bin_directory }}/startServer.sh server1 -profileName {{ profile_name }}"
+  register: out
+ 
+- debug: var=out

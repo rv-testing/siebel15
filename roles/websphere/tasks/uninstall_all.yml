@@ -1,0 +1,12 @@
+---
+
+- name:     Uninstall ALL
+  command:  "{{ imgr_install_location }}/eclipse/tools/imcl uninstallAll -installationDirectory {{was_install_location}}"
+  register: cout
+   
+- debug: var=cout
+
+#- name: Remove {{app_dir}}
+#  file:
+#    state: absent
+#    path: "{{app_dir}}"

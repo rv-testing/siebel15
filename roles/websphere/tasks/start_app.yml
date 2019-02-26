@@ -1,0 +1,10 @@
+---
+- name: Building the start script
+  template:
+    src=was_start_app.j2
+    dest=/opaapp_01/appopa1/scripts/was_start_app.py
+
+- name: Execute the start app
+  shell: "{{was_install_location}}/bin/wsadmin.sh -lang jython -username {{websphere_admin}} -password {{websphere_admin_pwd}} -f {{deploy_scripts}}/was_start_app.py"
+ 
+- debug: var=output.stdout_lines  

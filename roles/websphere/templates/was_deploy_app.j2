@@ -1,0 +1,22 @@
+#Script to Deploy determinations-server.war
+appManager = AdminControl.queryNames('cell={{ansible_hostname}}Node01Cell,node=Node01,type=ApplicationManager,process=server1,*')
+import java.lang.System as sys
+lineSeparator = sys.getProperty('line.separator')
+def installApplicationOnServer( fileName, appName, contextRoot, serverName ):
+#def installApplicationOnServer( fileName, appName,  serverName ):
+        """Install given application on the named server using given context root"""
+        print "installApplicationOnServer: fileName=%s appName=%s contextRoot=%s ServerName=%s" % ( fileName, appName,contextRoot,serverName )
+        #print "installApplicationOnServer: fileName=%s appName=%s ServerName=%s" % ( fileName, appName,serverName )
+        AdminApp.install(fileName,'[-appname ' + appName + ' -contextroot ' + contextRoot + ' -server ' + serverName + ' -usedefaultbindings ]')
+        #AdminApp.install(fileName,'[-appname ' + appName + ' -server ' + serverName + ' -usedefaultbindings ]')
+        AdminConfig.save()
+
+{% for item in deploy_apps %}
+fileName="{{deploy_scripts}}/{{item.deploy_warName}}"
+appName="{{item.deploy_appname}}"
+serverName="{{app_profile_server}}"
+contextRoot="{{item.deploy_appcontext}}"
+installApplicationOnServer( fileName, appName, contextRoot, serverName )
+#start application
+AdminControl.invoke(appManager, 'startApplication', appName)
+{% endfor %}

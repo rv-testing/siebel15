@@ -1,0 +1,11 @@
+---
+
+- name: test
+  hosts: ihs_linux
+
+  tasks: 
+    - shell: ping {{hostvars[groups['ihs_linux'][0]].ansible_fqdn}}
+      register: ihs
+    - debug: var=ihs
+
+    

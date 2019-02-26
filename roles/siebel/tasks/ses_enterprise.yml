@@ -1,0 +1,13 @@
+---
+  
+- name:         Building the ses enterprise response file
+  template:
+    src:        "{{ses_enterprise_responsefile_j2}}"
+    dest:       "{{siebweb_userhome}}/{{ses_enterprise_responsefile_rsp}}"            
+    
+- name:         Execute the ses enterprise silently 
+  command:      bash -lc "cd {{ses_gtwysrvr_path}}/ && . ./{{ses_gateway_siebenv_sh}} && cd {{ses_config_path}}/  && ./config.sh -mode enterprise -responseFile {{siebweb_userhome}}/{{ses_enterprise_responsefile_rsp}}"
+  register:     ses_enterprise
+  
+- debug:        var=ses_enterprise
+#.stdout_lines 

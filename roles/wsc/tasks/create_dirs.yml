@@ -1,0 +1,27 @@
+---
+
+- name: Create DIR staging
+  win_file:
+    path: "{{ staging_folder }}"
+    state: directory
+  become: false   
+- name: Create DIR log
+  win_file:
+    path: "{{ log_folder }}"
+    state: directory
+  become: false     
+- name: Create DIR backup
+  win_file:
+    path: "{{ backup_folder }}"
+    state: directory
+  become: false     
+- name: Create DIR temp
+  win_file:
+    path: "{{ temp_folder }}"
+    state: directory
+  become: false   
+- name: Create DIR scripts if it does not exist
+  win_file:
+    path: C:\TEMP\TestStaticContent\scripts\
+    state: directory
+  become: false  

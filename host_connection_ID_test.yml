@@ -1,0 +1,9 @@
+---
+- name: shell module check user name
+  hosts: all
+  
+  tasks:
+  - name:  
+    shell: set -x; whoami; echo $PATH ; /usr/sbin/ifconfig -a
+    register: outputwhoami
+  - debug: var=outputwhoami.stdout_lines

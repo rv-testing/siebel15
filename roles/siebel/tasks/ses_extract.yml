@@ -1,0 +1,24 @@
+---
+
+- name:           Is ses path installed?
+  stat:
+    path:         "{{ ses_path }}/"
+  register:       ses_path_installed
+  
+- name:           Download ses.zip
+  get_url:
+    url:          "{{ siebel_repository_url }}{{ ses_zip }}"
+    dest:         "{{ siebel_version_path }}/{{ ses_zip }}"
+    mode:         0755
+  when:           ses_path_installed.stat.exists == false
+
+- name:           Extract ses.zip
+  unarchive:
+    src:          "{{ siebel_version_path }}/{{ ses_zip }}"
+    dest:         "{{ siebel_version_path }}/"
+    copy:         no
+  when:           ses_path_installed.stat.exists == false
+  
+- debug:
+    msg:          "!!!!!!!!!!!!!!!!!ses path EXIST!!!!!!!!!!!!!!!!!"  
+  when:           ses_path_installed.stat.exists == true  

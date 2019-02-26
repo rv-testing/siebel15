@@ -1,0 +1,7 @@
+---
+- name: Stop websphere profile
+  shell: "/bin/sh {{ was_bin_directory }}/stopServer.sh server1 -profileName {{ profile_name }} -username {{ websphere_admin }} -password {{ websphere_admin_pwd }}"
+  register: out
+  ignore_errors: true
+ 
+- debug: var=out

@@ -1,0 +1,156 @@
+---
+
+- name: Include server firewall to check
+  include_vars: windows.yml
+
+
+#convert to upper case
+
+- name: Remove the header of the windows.csv
+  shell: awk 'FNR > 1 { print  $0 }' windows.csv > upper.txt
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Convert all hostname to uppercase
+  shell: ./roles/vfc/files/upper.py upper.txt
+  delegate_to: localhost
+  run_once: true
+  become: false
+  
+- name: Create windows.csv header 
+  shell: echo Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk,Check-Host-ip > windows.csv
+  delegate_to: localhost
+  run_once: true
+  become: false
+  
+- name: Put back the rest to windows.csv
+  shell: cat upper.txt >> windows.csv
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+
+
+- name: delete previous files
+  win_shell: del /f /q C:\Windows\Temp\{{ ansible_hostname|upper }}_output.csv C:\Windows\Temp\data*.txt
+  args:
+    executable: cmd
+    warn: false
+  ignore_errors: True 
+  
+- name: Get hostname
+  block:
+    - win_shell: echo {{ ansible_hostname|upper }} > C:\Windows\Temp\data0.txt
+    - win_shell: echo * >> C:\Windows\Temp\data0.txt
+    - win_shell: echo * >> C:\Windows\Temp\data0.txt
+
+- name: Grab ip only *****
+  block:
+    - win_shell: ipconfig | find "IPv4 Address" >  C:\Windows\Temp\ip.txt
+    - win_shell: |
+         Get-Content C:\Windows\Temp\ip.txt | %{ $_.Split(':')[1]; } > C:\Windows\Temp\lines.txt
+    - win_shell: |
+         Get-Content C:\Windows\Temp\lines.txt -First 1 > C:\Windows\Temp\iptop.txt
+    - win_shell: |
+         (Get-Content C:\Windows\Temp\iptop.txt).Trim() > C:\Windows\Temp\data1.txt
+    - win_shell: copy "C:\Windows\Temp\data0.txt"+"C:\Windows\Temp\data1.txt" C:\Windows\Temp\data2.txt /Y
+      args:
+        executable: cmd
+
+- name: Get the cpu core *****
+  block:
+    - win_shell: |
+         Get-WmiObject -class Win32_processor | ft NumberOfCores > C:\Windows\Temp\cpucore.txt
+    - win_shell: |
+         (Get-Content C:\Windows\Temp\cpucore.txt)[3].Trim() > C:\Windows\Temp\data1.txt    
+    - win_shell: copy "C:\Windows\Temp\data2.txt"+"C:\Windows\Temp\data1.txt" C:\Windows\Temp\data3.txt /Y
+      args:
+        executable: cmd
+
+- name: Get the total memory
+  block:
+    - win_shell: |
+         ((Get-WmiObject -class "cim_physicalmemory" | Measure-Object -Property Capacity -Sum).Sum) /1024/1024/1024 > C:\Windows\Temp\data1.txt    
+    - win_shell: copy "C:\Windows\Temp\data3.txt"+"C:\Windows\Temp\data1.txt" C:\Windows\Temp\data4.txt /Y
+      args:
+        executable: cmd
+
+- name: Get the total disk ****
+  block:
+    - win_shell: |
+         Get-Disk | Foreach-Object {$_.Size/1024/1024/1024} > C:\Windows\Temp\data2.txt       
+    - win_shell: |
+         Get-Content c:\windows\temp\data2.txt | ForEach-Object -Begin {[int]$Sum = 0} -Process {$Sum += $_} -End {$Sum} > C:\Windows\Temp\data1.txt
+    - win_shell: copy "C:\Windows\Temp\data4.txt"+"C:\Windows\Temp\data1.txt" C:\Windows\Temp\data5.txt /Y
+      args:
+        executable: cmd
+
+- name: Put the headers
+  win_shell: echo "Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk," > C:\Windows\Temp\data221.txt
+  
+- name: Put it in CSV in one line
+  win_shell: |
+     Get-Content -Path C:\Windows\Temp\data5.txt | %{$v += ($(if($v){", "}) + $_ + $t)} ; $v >> C:\Windows\Temp\data221.txt
+
+- name: Obtain information about a file
+  win_stat:
+     path: C:\Windows\system32\PortQry.exe
+  register: file_info
+      
+- name: Copy a single file
+  win_copy:
+     src: roles/vfc/files/PortQry.exe
+     dest: C:\Windows\system32\PortQry.exe
+  when: 'file_info is succeeded'
+  ignore_errors: true
+
+- name: Check remote host port
+  win_shell: |
+     PortQry.exe -wt 4 /n {{ item.server2 }} /p tcp /e {{ item.port }}
+  register: out
+  ignore_errors: True
+  when: item.server1 == ansible_hostname|upper
+  with_items: "{{ servers }}" 
+  ignore_errors: true
+  
+#- debug: var=out   
+  
+- name: Save remote port   
+  win_shell: echo  ,{{ item.item.server2 }}, {{ item.item.port }} is {% if item.failed %}closed or already tested or no dns{% else %} open{% endif %} >> C:\Windows\Temp\data222.txt
+  args:
+    executable: cmd
+  when: item.item.server1 == ansible_hostname|upper
+  with_items: "{{ out.results }}"
+  ignore_errors: true
+
+- name: Combine final data
+  win_shell: |
+     Get-Content C:\Windows\Temp\data22*.txt | Out-File -FilePath C:\Windows\Temp\{{ ansible_hostname|upper }}_output.csv -Encoding ASCII -Append
+    
+#- meta: end_play    
+    
+- name: Fetching file
+  fetch:
+    src: C:\Windows\Temp\{{ ansible_hostname|upper }}_output.csv
+    dest: ./{{ ansible_hostname|upper }}_output.csv
+    flat: yes
+     
+- name: Execute Validation
+  shell: ./roles/vfc/files/validate.py windows
+  args:
+    executable: /bin/bash
+  delegate_to: localhost
+  run_once: true
+  become: false
+  
+- name: Copy windows_output.csv to the first client
+  win_copy:
+    src: ./windows_output.csv
+    dest: .\windows_output.csv
+  run_once: true
+  become: false
+  
+- name: Delete temp files
+  shell: rm -f epel* temp* error cp-csv sshcopy windows.yml upper.txt comma.csv
+  delegate_to: localhost

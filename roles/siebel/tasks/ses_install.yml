@@ -1,0 +1,66 @@
+---
+
+- name:           Is ses path installed?
+  stat:
+    path:         "{{ ses_path }}/"
+  register:       ses_path_installed
+  
+- name:           Building the ses_install response file
+  template:
+    src:          "{{ses_install_responsefile_j2}}"
+    dest:         "{{siebweb_userhome}}/{{ses_install_responsefile_rsp}}"
+  when:           ses_path_installed.stat.exists == false or ses_install_force == true
+
+- name:          Run silent installer for ses
+  shell:         "cd {{ses_source}} && yes | ./runInstaller -silent -silent -oneclick -responseFile {{siebweb_userhome}}/{{ses_install_responsefile_rsp}} -jreLoc {{app_dir}}/jre1.8.0_151 -invPtrLoc {{siebweb_orainventory}}/{{siebweb_orainst}}"
+  register:      ses_silent_output
+  when:          ses_path_installed.stat.exists == false or ses_install_force == true
+    
+- debug:         var=ses_silent_output.stdout_lines
+  when:          ses_path_installed.stat.exists == false or ses_install_force == true
+  
+  
+- name:           chmod and chown to user and group ses
+  file:
+    path:         "{{ses_path}}"
+    owner:        "{{app_user}}"
+    group:        "{{app_group}}"
+    mode:         0755
+    recurse:      yes   
+  when:          ses_path_installed.stat.exists == false or ses_install_force == true 
+    
+    
+
+
+- name:           Building the ses_install_patch response file
+  template:
+    src:          "{{ses_install_patch_responsefile_j2}}"
+    dest:         "{{siebweb_userhome}}/{{ses_install_patch_responsefile_rsp}}"
+  when:           ses_path_installed.stat.exists == false or ses_install_patch_force == true  
+
+- name:          Run silent installer for ses patch
+  shell:         "cd {{ses_source_patch}} && yes | ./runInstaller -silent -responseFile {{siebweb_userhome}}/{{ses_install_patch_responsefile_rsp}} -jreLoc {{app_dir}}/jre1.8.0_151 -invPtrLoc {{siebweb_orainventory}}/{{siebweb_orainst}}"
+  register:      ses_silent_patch_output
+  when:          ses_path_installed.stat.exists == false or ses_install_patch_force == true
+  
+- debug:         var=ses_silent_patch_output.stdout_lines
+  when:          ses_path_installed.stat.exists == false or ses_install_patch_force == true
+ 
+ 
+ 
+- name:           chmod and chown to user and group ses
+  file:
+    path:         "{{ses_path}}"
+    owner:        "{{app_user}}"
+    group:        "{{app_group}}"
+    mode:         0755
+    recurse:      yes   
+  when:           ses_path_installed.stat.exists == false or ses_install_patch_force == true     
+        
+  
+  
+- debug:
+    msg:          "!!!!!!!!!!!!!!!!!ses path EXIST!!!!!!!!!!!!!!!!!"  
+  when:           ses_path_installed.stat.exists == true 
+  
+

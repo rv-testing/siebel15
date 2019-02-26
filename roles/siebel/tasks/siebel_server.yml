@@ -1,0 +1,23 @@
+---
+  
+- name:         Building the siebel server bash_profile
+  template:
+    src:        "{{siebel_server_bash_profile_j2}}"
+    dest:       "{{siebweb_userhome}}/{{siebel_server_bash_profile}}"    
+        
+- name:         Building the siebel server siebenv.sh
+  template:
+    src:        "{{siebel_server_siebenv_sh_j2}}"
+    dest:       "{{siebel_siebsrvr}}/{{siebel_server_siebenv_sh}}"  
+  
+- name:         Building the siebel server response file
+  template:
+    src:        "{{siebel_server_responsefile_j2}}"
+    dest:       "{{siebweb_userhome}}/{{siebel_server_responsefile_rsp}}"            
+    
+- name:         Execute the siebel server silently 
+  command:      bash -lc  "cd {{siebel_siebsrvr}}/ && . ./{{siebel_server_siebenv_sh}} && cd {{ses_config_path}}/  && ./config.sh -mode siebsrvr -responseFile {{siebweb_userhome}}/{{siebel_server_responsefile_rsp}}"
+  register:     siebel_server
+  
+- debug:        var=siebel_server
+#.stdout_lines 

@@ -1,0 +1,13 @@
+---
+
+- name:            Archive Webserver
+  archive:
+    path:          "{{siebweb_sfw_webserver}}"
+    dest:         "{{siebweb_sfw}}/{{siebweb_webserver_zip}}"
+    format:        zip
+  
+- name:            Fetching file
+  fetch:
+    src:          "{{siebweb_sfw}}/{{siebweb_webserver_zip}}"
+    dest:         ./{{siebweb_webserver_zip}}
+    flat:          yes

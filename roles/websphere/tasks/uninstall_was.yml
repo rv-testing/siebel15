@@ -1,0 +1,23 @@
+---
+- include_tasks: stop_profile.yml
+
+- name:          Is Product already Installed?
+  command:       "egrep {{ was_product_id }} $HOME/var/ibm/InstallationManager/installed.xml"
+  register:      version_already_installed
+  ignore_errors: true
+
+- debug: var=version_already_installed
+
+- name:          Generate uninstall WAS Response file
+  template:
+    src:         "{{ was_uninstall_tpl_file }}"
+    dest:        "{{ was_uninstall_rsp_file }}"
+  when:          version_already_installed.rc == 0
+
+- name:          Uninstall IBM WAS Software
+  command: "{{ imgr_install_location }}/eclipse/tools/imcl input {{ was_uninstall_rsp_file }} -log {{ was_uninstall_log_file }}"
+  register:      cout
+  #changed_when:  ( cout.stdout.find( was_version_check ) != -1)
+  when:          version_already_installed.rc == 0
+   
+- debug: var=cout

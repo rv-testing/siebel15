@@ -1,0 +1,13 @@
+---
+app_user: appebs1
+app_group: tsoapps
+app_dir: /ebsapp_01
+filesystem_type: ext4
+physical_disk: /dev/sdc1
+physical_disk_raw: /dev/sdc
+
+instance_name: instance1
+ohs_component: ohs1
+web_app_server: sdcgisazdbora03
+web_app_server_ip: 10.193.177.213
+domain_name: cihs.ad.gov.on.ca

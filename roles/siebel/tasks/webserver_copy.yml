@@ -1,0 +1,15 @@
+---
+
+- name:           Copy webserver.zip from ses
+  copy:
+    src:          ./{{siebweb_webserver_zip}}
+    dest:         "{{siebweb_sfw}}/{{siebweb_webserver_zip}}" 
+  mode: 0022
+  
+- name:           Extract siebweb Webserver file
+  unarchive:
+    src:          "{{siebweb_sfw}}/{{siebweb_webserver_zip}}"
+    dest:         "{{siebweb_sfw}}/"
+    copy:         no        
+  
+  

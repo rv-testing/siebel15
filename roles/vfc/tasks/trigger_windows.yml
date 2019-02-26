@@ -1,0 +1,25 @@
+---
+
+- name: Include server firewall to check
+  include_vars: windows.yml
+
+- name: Obtain information about a powercat
+  win_stat: 
+    path: C:\Windows\system32\powercat.ps1
+  register: file_info
+  ignore_errors: true
+      
+- name: Copy powercat
+  win_copy:
+    src: roles/vfc/files/powercat.ps1
+    dest: C:\Windows\system32\powercat.ps1
+  when: file_info is succeeded
+  ignore_errors: true
+
+- name: Put the listener up.
+  win_shell: | 
+     . powercat.ps1; powercat -t 600 -l -p {{ item.port }}
+  when: item.server2 == ansible_hostname|upper
+  async: 600                              #run it for 20 minutes until it got verified
+  poll: 0                                  #run another immediately
+  with_items: "{{ servers }}"

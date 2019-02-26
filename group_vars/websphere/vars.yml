@@ -1,0 +1,12 @@
+---
+app_user: appopa1
+app_dir: /opaapp_01
+app_profile_server: server1
+websphere_admin: ibmadmin
+websphere_admin_pwd: "mtogov123"
+
+
+
+#filesystem_type: ext4
+#physical_disk: /dev/sdc1
+#physical_disk_raw: /dev/sdc

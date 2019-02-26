@@ -1,0 +1,7 @@
+What's new in version 1.2
+===========================
+Enhancements:  
+	- use Tempfile module instead of using local fixed temporary directory, to copy/explode deployment package
+	- Pick apps from env_app.cfg file with exact match of selected environment in GUI selection
+	- Sorted application in GUI Application list
+	- Updated GUI list window sizes

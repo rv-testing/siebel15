@@ -1,0 +1,6 @@
+---
+app_user: apppos1
+app_dir: /posapp_01
+filesystem_type: xfs
+physical_disk: /dev/sdc1
+physical_disk_raw: /dev/sdc

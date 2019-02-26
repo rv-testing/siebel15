@@ -1,0 +1,14 @@
+---
+
+- name:         Create Folders for {{ses_gtwysrvr_fs_path}}
+  file:         path={{ses_gtwysrvr_fs_path}} mode=0755 state=directory
+
+- name:         Building the ses gateway bash_profile
+  template:
+    src:        "{{ses_gateway_bash_profile_j2}}"
+    dest:       "{{siebweb_userhome}}/{{ses_gateway_bash_profile}}"    
+    
+- name:         Building the ses gateway siebenv.sh
+  template:
+    src:        "{{ses_gateway_siebenv_sh_j2}}"
+    dest:       "{{ses_gtwysrvr_path}}/{{ses_gateway_siebenv_sh}}"        

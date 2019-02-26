@@ -1,0 +1,15 @@
+---
+#ansible_user: srv.mto.tsoadm.qa@CIHS.AD.GOV.ON.CA     
+ansible_user: user1@TEST007.ORG             
+ansible_connection: winrm
+ansible_winrm_transport: kerberos
+ansible_port: 5985
+
+deploy_apps:
+  - env1: UAT1
+    app1: aris
+    zipappname: arisWeb_StaticContent.zip
+ #- env1: UAT1
+ #  app1: dss
+ #  zipappname: dssWeb_StaticContent.zip  
+  

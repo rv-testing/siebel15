@@ -1,0 +1,100 @@
+---
+# vars file for websphere
+# imgr_dir: "{{ibm_directory}}/InstallationManager"
+ibm_directory: "{{app_dir}}/IBM"
+websphere_directory: "{{ibm_directory}}/WebSphere"
+staging_dir: "{{ibm_directory}}/IBM_WAS"
+logs_dir: "{{ibm_directory}}/logs"
+imgr_install_location: "{{ibm_directory}}/InstallationManager"
+imshared_location: "{{ibm_directory}}/IMShared"
+was_install_location: "{{websphere_directory}}/AppServer"
+profile_directory: "{{was_install_location}}/profiles/{{profile_name}}"
+was_bin_directory: "{{profile_directory}}/bin"
+dmgr_profile_directory: "{{was_install_location}}/profiles/{{dmgr_profile_name}}"
+dmgr_bin_directory: "{{dmgr_profile_directory}}/bin"
+deploy_scripts: "{{app_dir}}/{{app_user}}/scripts"
+
+
+start_was_script: startServer.sh
+stop_was_script: stopServer.sh
+
+app_profile_server: server1
+websphere_admin: ibmadmin
+websphere_admin_pwd: "mtogov123"
+
+was_nodename: Node01
+dmgr_profile_name: QADmgr01
+profile_name: Custom01_Node_QA
+#ibm_repository_url: https://sdcdev01stal01ltcrus.blob.core.windows.net/tso/RLSO/software/IHS8.5.5.9
+ibm_repository_url: http://192.168.3.111/
+#bin_file: agent.installer.linux.gtk.x86_64_1.8.8000.20171130_1105.zip
+bin_file: ibm_manager.zip
+
+
+imgr_version: 1.8.8000.20171130_1105
+imgr_product_id: "\"id='com.ibm.cic.agent\""
+product_id: "\"id='com.ibm.cic.agent' version='{{ imgr_version }}'\""
+was_product_id: "\"id='com.ibm.websphere.BASE.v85'\"" 
+was_version_check: "Installed com.ibm.websphere.BASE.v85_8.5.5000"
+time_stamp: "{{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+
+was_fp_product_id: "com.ibm.websphere.BASE.v85_{{ fp_version }}"
+fp_version: "{{ was_fp_version_fp9 }}"
+was_fp_version_fp9: 8.5.5009.20160225_0435
+fp_version_check: "Updated to com.ibm.websphere.BASE.v85_{{ fp_version }}"
+fp_install_log_file: "{{ logs_dir }}/was_fp_install.{{ time_stamp }}.log"
+fp_install_tpl_file: was_fixes.rsp.j2
+fp_install_rsp_file: "{{ logs_dir }}/was_fixes_install.rsp.j2"
+fp_files: "{{ fp_files_fp9 }}"
+
+was_install_log_file: "{{ logs_dir }}/was_base_install.{{ time_stamp }}.log"
+was_install_tpl_file: was.rsp.j2
+was_install_rsp_file: "{{ logs_dir }}/was_BASE.rsp"
+was_profile_tpl_file: was_profile_node_unmanaged.rsp.j2
+was_profile_rsp_file: "{{ logs_dir }}/was_profile_node.rsp.j2"
+
+was_directories:
+  - "{{ibm_directory}}"
+  - "{{staging_dir}}"
+  - "{{logs_dir}}"
+  - "{{imgr_install_location}}"
+  - "{{websphere_directory}}"
+  
+was_zip_files: 
+  - { bf: WAS_V8.5.5_1_OF_3.zip }
+  - { bf: WAS_V8.5.5_2_OF_3.zip }
+  - { bf: WAS_V8.5.5_3_OF_3.zip }
+  
+fp_files_fp9: 
+  - { bf: 8.5.5-WS-WAS-FP0000009-part1.zip }
+  - { bf: 8.5.5-WS-WAS-FP0000009-part2.zip }
+
+git_user: bitsvsts
+git_password: mtogov123$$
+git_branch: development
+
+rulebases_git_repo: https://{{ git_user | urlencode }}:{{ git_password }}@netsdc.visualstudio.com/LTC.RUSSB.Automation/_git/LTC.RUSSB.TSO.Ansible
+rulebases_git_head: "{{ git_branch }}"
+
+vsts_git_path: "roles/websphere/files/opa/"
+
+rulebases_determinations:
+    pkg: "{{vsts_git_path}}rulebases_determinations.zip"
+    dest: "{{ was_install_location }}/profiles/AppSrv01/installedApps/{{ansible_hostname}}Node01Cell/determinations-server_war.ear/determinations-server.war/WEB-INF/classes/rulebases/"
+    
+rulebases_siebel_web_determinations:
+    pkg: "{{vsts_git_path}}rulebases_siebel_web_determinations.zip"
+    dest: "{{ was_install_location }}/profiles/AppSrv01/installedApps/{{ansible_hostname}}Node01Cell/web-determintations.ear/web-determinations.war/WEB-INF/classes/rulebases/"
+
+deploy_apps:
+  - deploy_warName:    "determinations-server.war"
+    deploy_appname:    "determinations-server_war"
+    deploy_appcontext: "determinations-server"
+  - deploy_warName:    "web-determinations.war"
+    deploy_appname:    "web-determinations_war"
+    deploy_appcontext: "web-determinations"
+    
+was_uninstall_tpl_file: was.ursp.j2    
+was_uninstall_rsp_file: "{{ logs_dir }}/u_was_BASE.rsp"
+was_uninstall_log_file: "{{ logs_dir }}/u_was_base_install.{{ time_stamp }}.log"
+     

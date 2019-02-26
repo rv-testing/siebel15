@@ -1,0 +1,177 @@
+---
+
+- name: Include server firewall to check
+  include_vars: linux.yml
+
+#convert to lower case
+
+- name: Remove the header of the linux.csv
+  shell: awk 'FNR > 1 { print  $0 }' linux.csv > lower.txt
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Convert all hostname to uppercase
+  shell: ./roles/vfc/files/lower.py lower.txt
+  delegate_to: localhost
+  run_once: true
+  become: false
+  
+- name: Create linux.csv header 
+  shell: echo Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk,Check-Host-ip > linux.csv
+  delegate_to: localhost
+  run_once: true
+  become: false
+  
+- name: Put back the rest to linux.csv
+  shell: cat lower.txt >> linux.csv
+  delegate_to: localhost
+  run_once: true
+  become: false
+  
+  
+
+- name: Check NC  
+  shell: rpm -qa nmap-ncat*
+  register: install
+  ignore_errors: true
+ 
+- name: Install NC
+  yum: 
+    name: nmap-ncat
+    state: present
+  when: install is succeeded
+  ignore_errors: true    
+
+- name: Get hostname
+  shell: echo "{{ ansible_hostname }}"  > /tmp/{{ ansible_hostname }}_data.csv
+  args:
+    executable: /bin/bash
+
+- name: Put blank
+  shell: echo ""  >> /tmp/{{ ansible_hostname }}_data.csv
+  args:
+    executable: /bin/bash
+
+- name: Put blank
+  shell: echo ""  >> /tmp/{{ ansible_hostname }}_data.csv
+  args:
+    executable: /bin/bash
+
+- name: Get IP
+  shell: hostname -I | cut -d' ' -f1 >> /tmp/{{ ansible_hostname }}_data.csv
+  args:
+    executable: /bin/bash
+
+- name: Get cpu core
+  shell: nproc >> /tmp/{{ ansible_hostname }}_data.csv
+  args:
+    executable: /bin/bash
+
+- name: Get memory ***memory-calculation***
+  shell: awk '/MemTotal/ {print $2}' /proc/meminfo > /tmp/{{ ansible_hostname }}_memory
+  args:
+    executable: /bin/bash
+
+- name: Get memory in GB ***memory-calculation***
+  shell: awk '{ print $1/1024/1024}' /tmp/{{ ansible_hostname }}_memory >> /tmp/{{ ansible_hostname }}_data.csv
+  args:
+    executable: /bin/bash
+
+- name: Get Disk Info ***disk-calculation***  
+  #calculation will be wrong if there's a disk with MB
+  shell: fdisk -l|grep /dev/ > /tmp/{{ ansible_hostname }}_disk && awk 'NR==1{print $2}' /tmp/{{ ansible_hostname }}_disk 
+  args:
+    executable: /bin/bash
+  register: out  
+    
+- name: Get Disk Info ***disk-calculation***  
+  shell: fdisk -l|grep /dev/sd > /tmp/{{ ansible_hostname }}_disk && awk '/Disk \/dev\/sd/ {print $3}' /tmp/{{ ansible_hostname }}_disk  > /tmp/{{ ansible_hostname }}_disk2
+  args:
+    executable: /bin/bash
+  when: out.stdout ==  "/dev/sda:" or out.stdout ==  "/dev/sdb:" or out.stdout == "/dev/sdc:" or out.stdout == "/dev/sdd:"
+
+- name: Get Disk Info ***disk-calculation***  
+  shell: fdisk -l|grep /dev/vd > /tmp/{{ ansible_hostname }}_disk && awk '/Disk \/dev\/vd/ {print $3}' /tmp/{{ ansible_hostname }}_disk  > /tmp/{{ ansible_hostname }}_disk2
+  args:
+    executable: /bin/bash
+  when: out.stdout ==  "/dev/vda:" or out.stdout == "/dev/vdb:" or out.stdout == "/dev/vdc:" or out.stdout == "/dev/vdd:"
+
+- name: Get how many disk ***disk-calculation***
+  shell: cat /tmp/{{ ansible_hostname }}_disk2 | wc -l
+  args:
+    executable: /bin/bash
+  register: countline
+
+- name: Calculate the sum of disks ***disk-calculation***
+  shell: awk '{sum+=$1} (NR%{{countline.stdout}})==0{print sum}' /tmp/{{ ansible_hostname }}_disk2 >> /tmp/{{ ansible_hostname }}_data.csv
+  args:
+    executable: /bin/bash     
+  
+- name: delete csv
+  shell: rm -f /tmp/{{ ansible_hostname }}_output.csv
+  args:
+    executable: /bin/bash
+    warn: false
+  ignore_errors: True
+
+- name: Put the headers
+  shell: echo 'Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk' > /tmp/{{ ansible_hostname }}_output.csv
+  
+- name: Put it in CSV in one line
+  shell: cat /tmp/{{ ansible_hostname }}_data.csv | awk '{print}' ORS=','  >> /tmp/{{ ansible_hostname }}_output.csv
+  args:
+    executable: /bin/bash
+ 
+- name: Check if remote host port
+  shell: nc {{ item.server2 }} {{ item.port }}
+  ignore_errors: True
+  register: out
+  when: item.server1 == ansible_hostname
+  with_items: "{{ servers }}"
+  ignore_errors: true
+  
+#- debug: var=out  
+
+- name: Save remote port   
+  shell: printf "\n,{{ item.item.server2 }}, {{ item.item.port }} is {% if item.failed %}closed{% else %}open{% endif %}"  >> /tmp/{{ ansible_hostname }}_output.csv
+  args:
+    executable: /bin/bash
+  when: item.item.server1 == ansible_hostname
+  with_items: "{{ out.results }}"
+  ignore_errors: true
+    
+
+- name: Fetching file
+  fetch:
+    src: /tmp/{{ ansible_hostname }}_output.csv
+    dest: ./{{ ansible_hostname }}_output.csv
+    flat: yes
+
+#- meta: end_play
+
+- name: Make validate executable
+  shell: chmod u+x roles/vfc/files/validate.py
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Execute Validation
+  shell: ./roles/vfc/files/validate.py linux
+  args:
+    executable: /bin/bash
+  delegate_to: localhost
+  run_once: true
+  become: false
+
+- name: Copy linux_output.csv to the first client
+  copy:
+    src: ./linux_output.csv
+    dest: ./linux_output.csv
+  run_once: true
+  mode: 0022      
+      
+- name: Delete temp files
+  shell: rm -f epel* temp* error cp-csv sshcopy linux.yml lower.txt
+  delegate_to: localhost
+        

@@ -1,0 +1,48 @@
+---
+
+- name:          Is imgr installed?
+  stat:
+    path:        "{{imgr_folder}}"
+  register:      is_imgr_installed
+  
+
+- name:           Download imgr Files
+  get_url:
+    url:          "{{ibm_repository_url}}{{zip_imgr_file}}"
+    dest:         "{{app_dir}}/{{ zip_imgr_file}}"
+    mode:         0755
+  when:          is_imgr_installed.stat.exists == false
+
+
+- name:           Extract imgr Files
+  unarchive:
+    src:          "{{app_dir}}/{{zip_imgr_file}}"
+    dest:         "{{app_dir}}/"
+    copy:         no
+  when:          is_imgr_installed.stat.exists == false
+  
+ 
+
+- name:          chmod & chgrp to executable InstallationManager
+  shell:         "sudo chmod 0755 -R {{app_dir}} && sudo chown -R {{app_user}}:{{app_group}} {{app_dir}}/"
+  when:          is_imgr_installed.stat.exists == false or imgr_install_force | default(False) == True
+
+            
+- name:          Run silent installer for imgr
+  shell:         "cd {{imgr_folder_tools}} && sudo yes | ./imcl install {{imgr_domain}} -acceptLicense -installationDirectory {{ihs_installationmanager}} -repositories {{imgr_folder_install}} -log {{imgr_log}}"
+  register:      imgr_silent_output
+  when:          is_imgr_installed.stat.exists == false or imgr_install_force | default(False) == True
+    
+- debug:         var=imgr_silent_output
+  when:          is_imgr_installed.stat.exists == false or imgr_install_force | default(False) == True  
+         
+          
+          
+- name:           chmod to executable HTTPServer 
+  shell:        "sudo chmod 0755 -R {{app_dir}} && sudo chown -R appsib1:tsoapps {{app_dir}}/"
+  when:          is_imgr_installed.stat.exists == false or imgr_install_force | default(False) == True
+            
+- name:          chmod & chgrp to executable InstallationManager
+  shell:         "sudo chmod 0755 -R {{app_dir}} && sudo chown -R {{app_user}}:{{app_group}} {{app_dir}}/"
+  when:          is_imgr_installed.stat.exists == false or imgr_install_force | default(False) == True
+       

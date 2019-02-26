@@ -1,0 +1,16 @@
+---
+
+- name:           Delete files
+  file:
+    path:         "{{ item }}"
+    state:        absent    
+  ignore_errors:  true
+  with_items:     
+    - "{{ app_dir }}/{{ siebweb_java_zip }}"
+    - "{{ siebweb_sfw }}/{{ siebweb_zip }}"
+    - "{{ siebweb_sfw }}/{{ siebweb_patch_zip }}"
+    - "{{ siebweb_sfw }}/{{ siebweb_webserver_zip }}"
+    - "{{ siebweb_sfw }}/{{ siebweb_install_folder }}"
+    - "{{ siebweb_sfw }}/{{ siebel_patch_folder }}"    
+
+    

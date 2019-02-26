@@ -1,0 +1,9 @@
+---
+- include_tasks: stop_profile.yml
+
+- name: Remove websphere profile
+  shell: "/bin/sh {{ was_bin_directory }}/manageprofiles.sh -delete -profileName {{ profile_name }}"
+  register: out
+  ignore_errors: true
+ 
+- debug: var=out

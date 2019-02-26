@@ -1,0 +1,12 @@
+---
+app_user: appiws1
+app_dir: /iwsapp_01
+filesystem_type: ext4
+physical_disk: /dev/sdc1
+physical_disk_raw: /dev/sdc
+
+profile_name: Custom01_Node_SIT1
+dmgr_profile_name: SIT1Dmgr01
+app_profile_server: DepEnv01.SingleCluster.sdcgisazapmdw07Node01.0
+websphere_admin: bpmadmin
+websphere_admin_pwd: "infosys123"

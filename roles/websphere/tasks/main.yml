@@ -1,0 +1,64 @@
+---
+# tasks file for WebSphere
+
+- include_tasks: was_prep.yml
+  when: was_prep | default(False) == True
+  
+- include_tasks: install_imgr.yml
+  when: install_imgr | default(False) == True
+  
+- include_tasks: install_was.yml
+  when: install_was | default(False) == True
+  
+- include_tasks: fixpack_install.yml
+  when: install_fixpack | default(False) == True
+  
+- include_tasks: create_profile.yml
+  when: was_profile_create | default(False) == True
+
+- include_tasks: start_stop_app_server.yml
+  when: start_was | default(False) == True or
+        stop_was | default(False) == True
+
+- include_tasks: start_dmgr.yml
+  when: start_dmgr | default(False) == True
+  
+- include_tasks: stop_dmgr.yml
+  when: stop_dmgr | default(False) == True
+  
+- include_tasks: start_node.yml
+  when: start_node | default(False) == True
+  
+- include_tasks: stop_node.yml
+  when: stop_node | default(False) == True
+  
+- include_tasks: deploy_app.yml
+  when: deploy_app | default(False) == True  
+
+- include_tasks: deploy_rulebases.yml
+  when: deploy_rulebases | default(False) == True
+  
+- include_tasks: start_app.yml
+  when: start_app | default(False) == True  
+
+- include_tasks: stop_app.yml
+  when: stop_app | default(False) == True  
+
+- include_tasks: uninstall_app.yml
+  when: uninstall_app | default(False) == True  
+
+- include_tasks: uninstall_profile.yml
+  when: uninstall_profile | default(False) == True  
+  
+- include_tasks: start_profile.yml
+  when: start_profile | default(False) == True  
+
+- include_tasks: stop_profile.yml
+  when: stop_profile | default(False) == True   
+  
+- include_tasks: uninstall_was.yml
+  when: uninstall_was | default(False) == True    
+    
+- include_tasks: uninstall_all.yml
+  when: uninstall_all | default(False) == True    
+    

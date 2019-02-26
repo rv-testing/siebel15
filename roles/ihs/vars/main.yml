@@ -1,0 +1,87 @@
+---
+# vars file for ihs
+
+ibm_directory: "{{app_dir}}/IBM"
+ihs_httpserver: "{{ibm_directory}}/HTTPServer"
+ihs_lib: "{{ihs_httpserver}}/lib/"
+staging_dir: "{{ibm_directory}}/IBM_WAS"
+ibm_logs: "{{ibm_directory}}/logs"
+siebel_userhome: "{{app_dir}}/{{app_user}}"
+ihs_installationmanager: "{{ibm_directory}}/InstallationManager"
+ihs_ws_part1: "{{app_dir}}/8.5.5-WS-part1"
+ihs_was_version: "{{app_dir}}/WAS_V8.5.5-1_OF_3"
+ihs_imshared: "{{ibm_directory}}/IMShared"
+imgr_folder: "{{ibm_directory}}/InstallationManager/eclipse"
+imgr_folder_install: "{{app_dir}}/ibm_universal_installer"
+imgr_folder_tools: "{{app_dir}}/ibm_universal_installer/tools"
+imgr_domain: com.ibm.cic.agent
+imgr_log: "{{app_dir}}/iim_install.log"
+
+app_profile_server: server1
+websphere_admin: ibmadmin
+websphere_admin_pwd: "mtogov123"
+
+ihs_nodename: Node01
+dmgr_profile_name: QADmgr01
+profile_name: Custom01_Node_QA
+
+ibm_repository_url: https://sdcdev01stal01ltcrus.blob.core.windows.net/tso/RLSO/software/IHS8.5.5.9/
+#ibm_repository_url: http://192.168.3.111/
+
+#zip_ihs_file: IBM-WS_IHS_linux-x86_64.zip
+zip_ihs_file: ibm_ihs_repos.zip
+zip_imgr_file: ibm_universal_installer.zip
+zip_ihs_siebel_file: Siebel_Linux_Web_Srv_Ext-15.0.0.0.0.zip
+
+ihs_dependencies:
+    - unzip
+    - tar
+    - wget
+    - git
+    - glibc.i686
+    - glibc
+    - glib2
+    - glibc-common
+    - glibc-headers
+    - glibc-devel
+    - compat-libstdc++-33 
+    - libaio-devel 
+    - compat-libcap1-1.10 
+    - ksh     
+    - libXtst        
+    - liberation-sans-fonts 
+    - elfutils-libelf
+    - libstdc++-devel.i686
+    - compat-libstdc++-33.i686
+    - libaio-devel.i686  
+    - libXext.i686 
+    - gcc-c++  
+    - libstdc++
+    - elfutils-libelf-devel.i686          
+
+ihs_directories:
+  - "{{app_dir}}"
+  - "{{ibm_directory}}"
+  - "{{staging_dir}}"
+  - "{{ibm_logs}}"
+  - "{{ihs_installationmanager}}"
+
+git_user: bitsvsts
+git_password: mtogov123$$
+git_branch: development
+
+rulebases_git_repo: https://{{ git_user | urlencode }}:{{ git_password }}@netsdc.visualstudio.com/LTC.RUSSB.Automation/_git/LTC.RUSSB.TSO.Ansible
+rulebases_git_head: "{{ git_branch }}"
+
+vsts_git_path: "roles/websphere/files/opa/"
+
+
+ihs_install_responsefile: ihs_install
+ihs_install_responsefile_j2: "{{ihs_install_responsefile}}.j2"
+ihs_install_responsefile_rsp: "{{ihs_install_responsefile}}.rsp"
+
+im_source: "{{imgr_folder}}"
+
+imgr_install_responsefile: imgr_install
+imgr_install_responsefile_j2: "{{imgr_install_responsefile}}.j2"
+imgr_install_responsefile_rsp: "{{imgr_install_responsefile}}.rsp"

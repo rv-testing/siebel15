@@ -1,0 +1,8 @@
+[ihs_linux]
+
+
+[ses_linux]
+sdcgisazapmdw22 ansible_host=10.193.176.60
+
+[siebel_linux]
+sdcgisazapmdw22 ansible_host=10.193.176.60

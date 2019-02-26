@@ -1,0 +1,8 @@
+---
+servers:
+ - server1: WIN1
+   server2: WIN2
+   port: 90
+ - server1: WIN2
+   server2: WIN1
+   port: 80

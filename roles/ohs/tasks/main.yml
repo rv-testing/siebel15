@@ -1,0 +1,8 @@
+---
+# tasks file for weblogic
+
+- include_tasks: app_url.yml
+  when: app_url_hosts | default(False) == True
+
+- include_tasks: ohs_config.yml
+  when: config_ohs | default(False) == True

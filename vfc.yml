@@ -1,0 +1,92 @@
+---
+
+- name: variable precedence test
+  hosts: all
+  gather_facts: false
+  tasks:
+    - include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "group_vars/{{ env }}/vault.yml"
+  tags: 
+    - win_ping
+    - trigger_windows
+    - post_windows
+    
+- name: windows ping
+  hosts: all
+  gather_facts: false
+  roles: 
+    - vfc
+  vars: 
+    win_ping: True  
+  tags: 
+    - win_ping    
+  
+- name: Create inventory and variables -linux
+  hosts: localhost ansible_connection=local
+  gather_facts: false
+  roles: 
+    - vfc
+  vars:     
+    prep_linux: True
+  tags: 
+    - prep_linux
+    
+- name: Create inventory and variables -windows
+  hosts: localhost ansible_connection=local
+  gather_facts: false
+  roles: 
+    - vfc
+  vars:     
+    prep_windows: True
+  tags: 
+    - prep_windows
+
+- name: Trigger firewall port -linux
+  hosts: all
+  become: true
+  gather_facts: false
+  roles: 
+    - vfc
+  vars: 
+    trigger_linux: True  
+  tags: 
+    - trigger_linux
+    
+- name: Trigger firewall port -windows
+  hosts: all
+  become_method: runas
+  gather_facts: true
+  roles: 
+    - vfc
+  vars: 
+    trigger_windows: True  
+  tags: 
+    - trigger_windows
+          
+- name: Main post tasks linux
+  hosts: all
+  become: true
+  roles: 
+    - vfc
+  vars: 
+    post_linux: True  
+  tags: 
+    - post_linux
+            
+- name: Main post tasks windows
+  hosts: all
+  become_method: runas
+  roles: 
+    - vfc
+  vars: 
+    post_windows: True  
+  tags: 
+    - post_windows
+    
+    
+
+    
+    
+    

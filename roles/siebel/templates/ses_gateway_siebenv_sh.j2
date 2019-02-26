@@ -1,0 +1,25 @@
+if [ ! -d "$HOME" ]; then
+  echo "ERROR: HOME must be set prior to starting the Siebel server!"
+  exit 1
+fi
+SIEBEL_ROOT={{ses_gtwysrvr_path}} ; export SIEBEL_ROOT
+SIEBEL_HOME={{ses_gtwysrvr_path}} ; export SIEBEL_HOME
+ORACLE_HOME={{app_dir}}/oraclnt/app/product/11.2.0/client_1 ; export ORACLE_HOME
+SIEBEL_LIB_DIR={{ses_gtwysrvr_path}}/lib ; export SIEBEL_LIB_DIR
+MWHOME=${SIEBEL_ROOT}/mw ; export MWHOME
+SQLANY=${SIEBEL_ROOT}/SYBSsa80 ; export SQLANY
+SIEBEL_LANGUAGE=enu ; export SIEBEL_LANGUAGE
+LANGUAGE=enu ; export LANGUAGE
+PATH=${PATH}:${SIEBEL_ROOT}/bin:${MWHOME}/bin ; export PATH
+PATH=${PATH}:${SQLANY}/bin
+if [ a${LD_LIBRARY_PATH} = ${LD_LIBRARY_PATH}a ]
+then LD_LIBRARY_PATH=${SIEBEL_ROOT}/lib:${SIEBEL_ROOT}/lib/odbc/merant:${MWHOME}/lib:${SQLANY}/lib:/usr/lib:${ORACLE_HOME}/lib
+else LD_LIBRARY_PATH=${SIEBEL_ROOT}/lib:${SIEBEL_ROOT}/lib/odbc/merant:${MWHOME}/lib:${SQLANY}/lib:/usr/lib:${LD_LIBRARY_PATH}:${ORACLE_HOME}/lib
+fi
+export LD_LIBRARY_PATH
+MWREGISTRY=${MWHOME}/system/registry.bin ; export MWREGISTRY
+MWCORE_PRIVATE_DATA=${MWHOME}/.mw/core_data ; export MWCORE_PRIVATE_DATA
+MWUSER_DIRECTORY=${MWHOME}/.mw ; export MWUSER_DIRECTORY
+ODBCINI=${SIEBEL_ROOT}/sys/.odbc.ini ; export ODBCINI
+SIEBEL_GATEWAY={{ansible_eth0.ipv4.address}}:{{ses_gateway_NamesrvrPortPick}}; export SIEBEL_GATEWAY
+SIEBEL_UNIXUNICODE_DB=ORACLE; export SIEBEL_UNIXUNICODE_DB

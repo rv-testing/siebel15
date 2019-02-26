@@ -1,0 +1,66 @@
+---
+
+- name:           Is siebel server path installed?
+  stat:
+    path:         "{{ ses_path }}/"
+  register:       siebel_path_installed
+  
+- name:           Building the siebel_install response file
+  template:
+    src:          "{{siebel_install_responsefile_j2}}"
+    dest:         "{{siebweb_userhome}}/{{siebel_install_responsefile_rsp}}"
+  when:           siebel_path_installed.stat.exists == false or siebel_install_force == true
+
+- name:          Run silent installer for siebel
+  shell:         "cd {{ses_source}} && yes | ./runInstaller -silent -silent -oneclick -responseFile {{siebweb_userhome}}/{{siebel_install_responsefile_rsp}} -jreLoc {{app_dir}}/jre1.8.0_151 -invPtrLoc {{siebweb_orainventory}}/{{siebweb_orainst}}"
+  register:      siebel_silent_output
+  when:          siebel_path_installed.stat.exists == false or siebel_install_force == true
+    
+- debug:         var=siebel_silent_output.stdout_lines
+  when:          siebel_path_installed.stat.exists == false or siebel_install_force == true
+  
+  
+- name:           chmod and chown to user and group siebel
+  file:
+    path:         "{{ses_path}}"
+    owner:        "{{app_user}}"
+    group:        "{{app_group}}"
+    mode:         0755
+    recurse:      yes   
+  when:          siebel_path_installed.stat.exists == false or siebel_install_force == true 
+    
+    
+
+
+- name:           Building the siebel_install_patch response file
+  template:
+    src:          "{{siebel_install_patch_responsefile_j2}}"
+    dest:         "{{siebweb_userhome}}/{{siebel_install_patch_responsefile_rsp}}"
+  when:           siebel_path_installed.stat.exists == false or siebel_install_patch_force == true  
+
+- name:          Run silent installer for siebel patch
+  shell:         "cd {{ses_source_patch}} && yes | ./runInstaller -silent -responseFile {{siebweb_userhome}}/{{siebel_install_patch_responsefile_rsp}} -jreLoc {{app_dir}}/jre1.8.0_151 -invPtrLoc {{siebweb_orainventory}}/{{siebweb_orainst}}"
+  register:      siebel_silent_patch_output
+  when:          siebel_path_installed.stat.exists == false or siebel_install_patch_force == true
+  
+- debug:         var=siebel_silent_patch_output.stdout_lines
+  when:          siebel_path_installed.stat.exists == false or siebel_install_patch_force == true
+ 
+ 
+ 
+- name:           chmod and chown to user and group siebel
+  file:
+    path:         "{{ses_path}}"
+    owner:        "{{app_user}}"
+    group:        "{{app_group}}"
+    mode:         0755
+    recurse:      yes   
+  when:           siebel_path_installed.stat.exists == false or siebel_install_patch_force == true     
+        
+  
+  
+- debug:
+    msg:          "!!!!!!!!!!!!!!!!!siebel path EXIST!!!!!!!!!!!!!!!!!"  
+  when:           siebel_path_installed.stat.exists == true 
+  
+

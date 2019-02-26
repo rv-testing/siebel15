@@ -1,0 +1,13 @@
+create
+profileName={{ profile_name }}
+profilePath={{ was_install_location }}/profiles/{{ profile_name }}
+templatePath={{ was_install_location }}/profileTemplates/default
+nodeName={{ was_nodename }}
+hostName={{ inventory_hostname }}
+adminUserName={{ websphere_admin }}
+adminPassword={{ websphere_admin_pwd }}
+enableAdminSecurity=true
+personalCertValidityPeriod=15
+signingCertValidityPeriod=15
+serverName={{ app_profile_server }}
+#serverName=febserver

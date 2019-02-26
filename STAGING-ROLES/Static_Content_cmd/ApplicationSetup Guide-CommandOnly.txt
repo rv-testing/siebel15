@@ -1,0 +1,111 @@
+Pre Requsite:
+==============
+
+stContentDeploy_cmd.exe is a standalone command line application.
+NO Python software installation required for this application.
+
+
+
+Application Setup
+==================
+
+- Login to Static Content windows server
+- Create any proper script directory of your choice (according to company standard) and copy application 'stContentDeploy_cmd.exe' in it.
+- Create master config file 'static_deploy.properties' and place it in the same directory where 'stContentDeploy_cmd.exe' resides
+- Choose/create base location for Deployment Code Staging 
+- Choose/create base location for Deployment logs
+- Choose/create base location for Backups (for Application and Staging code backups)
+- Choose/create a temporary directory location (to be used by application for deployment processing purpose). 
+  This directory will be empty as it will be used and clean automatically by application.
+- Populate config file 'static_deploy.properties' by creating some variables using above locations in each separate lines like below:
+	e.g.
+		
+		[main_info]
+		env_app_file=gui_env_app.cfg
+		staging_folder=D:\opt\staticContent\staging
+		backup_folder=D:\opt\staticContent\backup
+		log_folder=D:\opt\staticContent\logs
+		temp_folder=D:\opt\staticContent\temp1
+		DEBUG_MSG=0
+	
+	where:
+		- env_app_file 	-> 	Name of Application Destination list file e.g. env_app.cfg. 
+							It should be created in the same directory where 'stContentDeploy_cmd.exe' resides.
+		
+		- staging_folder -> Location for code staging. This base folder will be used to create further application specific staging folders like:
+						
+						<staging_folder>\<Environemnt>\<ApplicationName>  
+				   e.g. 
+						D:\opt\staticContent\staging\UAT1\dcp
+						D:\opt\staticContent\staging\UAT1\jtips
+						D:\opt\staticContent\staging\UAT1\des
+				   
+		- backup_folder -> 	Location for Application and Staging code backups. 
+								This is following the same format what we are following on SAE Solaris  for EAR deployment.
+								This base folder will be used to create further application specific backup folders like:
+								
+									Application code datetime backup 	- <backup_folder>\app\<Environemnt>\<ApplicationName>\<ddmmyyyy_hhmiss>  
+									Staging code  datetime backup 		- <backup_folder>\app\<Environemnt>\<ApplicationName>\<ddmmyyyy_hhmiss>  
+							   
+							   e.g. 
+									D:\opt\staticContent\backup\app\UAT1\dcp\24052018_165055
+									D:\opt\staticContent\backup\stage\UAT1\dcp\24052018_165055
+									
+									D:\opt\staticContent\backup\app\UAT1\jtips\14042018_115135
+									D:\opt\staticContent\backup\stage\UAT1\jtips\14042018_115135
+									
+									D:\opt\staticContent\backup\app\UAT1\des\21052018_132015
+									D:\opt\staticContent\backup\stage\UAT1\des\21052018_132015
+									
+		
+		- log_folder 	-> 	Location for deployment logs. All logs will go to this folder with format like:
+								
+								<Environemnt>_<ApplicationName>_<ddmmyyyy_hhmiss>.log
+								
+								e.g.
+									UAT1_dcp_24052018_165055.log
+									UAT1_jtips_14042018_115135.log
+									UAT1_des_21052018_132015.log
+							
+		
+		- temp_folder	-> 	Location for temporary files, to be used by application for deployment processing purpose
+		
+		- DEBUG_MSG 	-> 	To show extra messages on screen as well as in log file. 1 for print, 0 for No-print
+
+
+- Now, create Application Destination list 'env_app.cfg' file and and place it in the same directory where 'stContentDeploy_cmd.exe' resides 
+  Add all required applications in 'env_app_cfg' file in below format, one unique application on each row:
+  
+		Format:	<Environment Name>, <Application Name>, <Application Root Destination Directory>
+  
+	  Populate the file like below:
+	  
+	  Add first line like below:
+		
+		appEnv, appName,  app_Dest_dir 
+
+	 then add one line for each application like below:
+	 
+		e.g. sample env_app.cfg:
+		appEnv, appName,  	app_Dest_dir 
+		UAT1, 	dcp, 		D:\web\roots\MTOWEB-SAE\wwwroot  		
+		UAT1, 	des, 		D:\web\roots\MTOWEB-SAE\wwwroot  		
+		UAT1, 	jtips, 		D:\web\roots\MTOWEB-SAE\wwwroot  		
+		UAT1, 	ps, 		D:\web\roots\MTOWEB-SAE\wwwroot  		
+		UAT1, 	uas,		D:\web\roots\MTOWEB-SAE\wwwroot	  		
+		UAT1, 	rams,		D:\web\roots\MTOWEB-SAE-SERVICES\wwwroot  	
+		PROD, 	bdeW, 		D:\web\Roots\MTOWEB-SAE\wwwroot 		
+		PROD, 	dcpW, 		D:\web\Roots\MTOWEB-SAE\wwwroot 	
+
+- After completeing all above setup, put the to-be-deployed package (may be downloaded from Harvest) under application staging directory (defined above)	
+
+- Now yow are ready to use application.
+
+- To start deployment run the application on command line  like below:
+	Usage: stContentDeploy_cmd.exe <Environment> <ApplicationName>
+	e.g.
+		python stContentDeploy_cmd.exe  UAT1 dcp 
+		
+  It will proceed for application deployment.
+  
+  

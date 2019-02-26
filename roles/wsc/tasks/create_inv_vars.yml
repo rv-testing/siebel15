@@ -1,0 +1,62 @@
+---
+
+#convert to upper case
+
+- name: Make upper.py executable
+  shell: chmod u+x roles/wsc/files/local/upper.py
+  delegate_to: localhost 
+- name: Remove the header of the wins.csv
+  shell: awk 'FNR > 1 { print  $0 }' inventory/wins.csv > inventory/upper.txt
+  delegate_to: localhost 
+- name: Convert all hostname to uppercase
+  shell: ./roles/wsc/files/local/upper.py inventory/upper.txt
+  delegate_to: localhost 
+- name: Create wins.csv header 
+  shell: echo Hostname,IPAddress > inventory/wins.csv
+  delegate_to: localhost 
+- name: Put back the rest to wins.csv
+  shell: cat inventory/upper.txt >> inventory/wins.csv
+  delegate_to: localhost  
+  
+#add comma at the end
+- name: Make create-comma.sh executable
+  shell: chmod u+x roles/wsc/files/local/create-comma2.sh
+  delegate_to: localhost
+- name: Make combine.py executable
+  shell: chmod u+x roles/wsc/files/local/combine2.py
+  delegate_to: localhost
+- name: Create comma at the end 1
+  shell: ./roles/wsc/files/local/create-comma2.sh
+  delegate_to: localhost
+- name: Create comma at the end 2
+  shell: ./roles/wsc/files/local/combine2.py > inventory/temp003
+  delegate_to: localhost
+
+#create inventory   
+- name: Create {{ inv_file }} inventory 1
+  shell: printf "\tASDF\n" | awk -F',' '$1' inventory/temp003 > inventory/temp0  
+  delegate_to: localhost
+- name: Create {{ inv_file }} inventory 2
+  shell: awk -F',' 'FNR > 1 { print  $2 " ansible_host="$1 }' inventory/temp0 > inventory/temp
+  delegate_to: localhost
+- name: Create {{ inv_file }} inventory 3
+  shell: awk NF inventory/temp > inventory/temp0001
+  delegate_to: localhost
+- name: Create {{ inv_file }} inventory 4
+  shell: cat inventory/temp0001 | sort > inventory/{{ inv_file }}
+  delegate_to: localhost    
+  
+#create common.yml  
+
+- name: Create variables common.yml
+  shell: cp roles/wsc/files/remote/static_deploy.properties roles/wsc/vars/common.bak  
+- name: Remove the header of the common.yml
+  shell: awk 'FNR > 1 { print  $0 }' roles/wsc/vars/common.bak > roles/wsc/vars/common.yml     
+- name: Create variables
+  shell: "sed -i 's/=/: /g' roles/wsc/vars/common.yml"  
+  
+#delete temp files  
+- name: Delete temp files
+  shell: rm inventory/temp* inventory/upper.txt inventory/comma2.csv
+  delegate_to: localhost  
+  ignore_errors: true

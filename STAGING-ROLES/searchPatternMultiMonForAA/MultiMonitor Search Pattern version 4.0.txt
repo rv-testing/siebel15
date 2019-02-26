@@ -1,0 +1,19 @@
+MultiMonitor Search Pattern version 4.0
+========================================================
+Modified two scripts  srchPtrn.ksh &  srchPtrn.py for version 4 enhancements- Modified to handle multiple monitors concurrently using one configuration file srchPtrn.confg for last file positions.
+
+This v4 script will take an additional parameter like below and it will keep track of file positions with MonitorID+FileName  in srchPtrn.confg:
+
+
+
+Usage: $0 <Unique Monitor ID> <FILE_PATTERN with full path> <Search strings> 
+
+where:	Unique Monitor ID required to identify last read positions for files in srchPtrn.confg
+	File_PATTERN could be multiple files with full path using wild card '*' or separated by %
+	Search strings could be multiple Search strings separated by % 
+
+
+I have added another ksh script for initializing all variables. :
+
+# init_srchPtrn.ksh
+#initialize global variables

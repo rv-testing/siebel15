@@ -1,0 +1,15 @@
+---
+# vars file for weblogic ## 
+
+instance_name: instance1
+ohs_component: ohs1
+web_app_server: sdcgisazdbora03
+web_app_server_ip: 10.193.177.213
+middleware_dir: "{{app_dir}}/{{app_user}}/Middleware"
+instance_dir: "{{middleware_dir}}/Oracle_WT1/instances/{{instance_name}}"
+ohs_bin_dir: "{{instance_dir}}/bin"
+ohs_config_dir: "{{instance_dir}}/config"
+component_config_dir: "{{ohs_config_dir}}/OHS/{{ohs_component}}"
+weblogic_app_url: http://{{web_app_server}}.{{domain_name}}
+domain_name: cihs.ad.gov.on.ca
+super_user: root

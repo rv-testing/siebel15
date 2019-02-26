@@ -1,0 +1,10 @@
+---
+git_user: bitsvsts
+git_password: mtogov123$$
+git_branch: development
+rulebases_git_repo: https://{{ git_user | urlencode }}:{{ git_password }}@netsdc.visualstudio.com/LTC.RUSSB.Automation/_git/LTC.RUSSB.TSO.Ansible
+rulebases_git_head: "{{ git_branch }}"
+vsts_git_path: roles\wsc\files\local\
+inv_file: wins.ini
+deploy_scripts: c:\TEMP\TestStaticContent\scripts\
+temp_repo: c:\temp\repository\wsc\

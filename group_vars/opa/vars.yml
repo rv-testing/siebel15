@@ -1,0 +1,17 @@
+---
+app_user: appopa1
+app_dir: /opaapp_01
+app_group: tsoapps
+super_user: root
+
+filesystem_type: ext4
+physical_disk: /dev/sdc1
+physical_disk_raw: /dev/sdc
+
+websphere_admin: ibmadmin
+websphere_admin_pwd: "mtogov123"
+
+app_profile_server: server1
+profile_name: AppSrv01
+was_nodename: Node01
+

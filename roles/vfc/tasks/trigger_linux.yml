@@ -1,0 +1,32 @@
+---
+
+- name: Include server firewall to check
+  include_vars: linux.yml
+  
+- name: Check NC
+  shell: rpm -qa nmap-ncat*
+  register: install
+  ignore_errors: true
+            
+- name: Install NC
+  yum: 
+    name: nmap-ncat
+    state: present
+  when: install is succeeded
+  ignore_errors: true
+  
+#- meta: end_play
+
+- name: Close nc if it is still running
+  #shell: pkill -fx 'nc -l {{ item.port }}'    #older version of nc dont have --keep-open
+  shell: pkill -fx 'nc -l {{ item.port }} --keep-open'
+  ignore_errors: true
+  with_items: "{{ servers }}"
+
+- name: Put listening port 
+  shell: nc -l {{ item.port }}              #if server got listening port already, this will not run
+  #shell: nc -l {{ item.port }} --keep-open   #if server got listening port already, this will not run
+  async: 600                              #run it for 20 minutes until it got verified
+  poll: 0                                 #run another immediately
+  with_items: "{{ servers }}"
+ 

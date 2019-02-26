@@ -1,0 +1,17 @@
+---
+
+- include_tasks: create_inv_vars.yml
+  when: prep_run | default(False) == True   
+
+- name: Include common.yml
+  include_vars: common.yml
+
+- include_tasks: create_dirs.yml
+  when: post_run | default(False) == True   
+
+- include_tasks: copyscripts.yml   
+  when: post_run | default(False) == True
+  
+#- include_tasks: execute.yml
+#  when: post_run | default(False) == True   
+     

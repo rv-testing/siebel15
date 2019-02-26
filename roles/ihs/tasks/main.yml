@@ -1,0 +1,19 @@
+---
+
+- include_tasks: ihs_prep.yml
+  when: ihs_prep | default(False) == True
+  
+- include_tasks: ihs_misc.yml
+  when: ihs_misc | default(False) == True
+
+- include_tasks: imgr_install.yml
+  when: imgr_install | default(False) == True 
+
+- include_tasks: ihs_install.yml
+  when: ihs_install | default(False) == True
+
+- include_tasks: start_stop_app_server.yml
+  when: ihs_start | default(False) == True or ihs_stop | default(False) == True
+  
+- include_tasks: cleanup.yml  
+  when: cleanup | default(False) == True     

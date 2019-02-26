@@ -1,0 +1,56 @@
+---
+
+- name:          Is IHS installed?
+  stat:
+    path:        "{{ ibm_directory }}/HTTPServer"
+  register:      is_ihs_installed
+  
+
+- name:           Download IHS Files
+  get_url:
+    url:          "{{ ibm_repository_url }}{{ zip_ihs_file }}"
+    dest:         "{{ app_dir }}/{{ zip_ihs_file }}"
+    mode:         0755
+  when:          is_ihs_installed.stat.exists == false 
+
+
+- name:           Extract IHS Files
+  unarchive:
+    src:          "{{ app_dir }}/{{ zip_ihs_file }}"
+    dest:         "{{ app_dir }}/"
+    copy:         no
+  when:          is_ihs_installed.stat.exists == false
+   
+  
+ 
+- name:          chmod & chgrp to executable InstallationManager
+  shell:         "sudo chmod 0755 -R {{app_dir}} && sudo chown -R {{app_user}}:{{app_group}} {{app_dir}}/"
+  when:          is_ihs_installed.stat.exists == false
+  
+           
+- name:           Building the ihs response file
+  template:
+    src:          "{{ihs_install_responsefile_j2}}"
+    dest:         "{{siebel_userhome}}/{{ihs_install_responsefile_rsp}}" 
+  when:           is_ihs_installed.stat.exists == false or ihs_install_force | default(False) == True
+  
+- name:          Run silent installer for IHS
+  shell:         "cd {{im_source}} && sudo ./IBMIM -silent -acceptLicense -input {{siebel_userhome}}/{{ihs_install_responsefile_rsp}}"
+  register:      ihs_silent_output
+  when:          is_ihs_installed.stat.exists == false or ihs_install_force | default(False) == True
+    
+- debug:         var=ihs_silent_output
+  when:          is_ihs_installed.stat.exists == false or ihs_install_force | default(False) == True 
+         
+          
+- name:          chmod & chgrp to executable InstallationManager
+  shell:         "sudo chmod 0755 -R {{app_dir}} && sudo chown -R {{app_user}}:{{app_group}} {{app_dir}}/"
+  when:          is_ihs_installed.stat.exists == false
+
+
+- name:           Start IHS using apachectl
+  shell:          "sudo {{ibm_directory}}/HTTPServer/bin/apachectl start"
+  register:       ihs_start_out
+  ignore_errors:  true
+
+- debug:          var=ihs_start_out.stdout_lines

@@ -1,0 +1,13 @@
+---
+  
+- name:     Building the siebweb-profile response file
+  template:
+    src:    "{{siebweb_responsefile_j2}}"
+    dest:   "{{siebweb_userhome}}/{{siebweb_responsefile_rsp}}"            
+    
+- name:     Execute the siebweb-profile silently 
+  command:  bash -lc "cd {{siebweb_path}}/ && . ./cfgenv.sh && cd {{siebweb_config}}/  && ./config.sh -mode swse -responsefile {{siebweb_userhome}}/{{siebweb_responsefile_rsp}}"
+  register: siebweb_output
+  
+- debug:    var=siebweb_output.stdout_lines
+ 

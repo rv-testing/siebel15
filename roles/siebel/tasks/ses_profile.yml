@@ -1,0 +1,24 @@
+---
+
+- name:           Is ses path installed?
+  stat:
+    path:         "{{ ses_path }}/"
+  register:       ses_path_installed
+ 
+- name:           Building the ses response file
+  template:
+    src:          "{{ses_responsefile_j2}}"
+    dest:         "{{siebweb_userhome}}/{{ses_responsefile_rsp}}"            
+  when:           ses_path_installed.stat.exists == true  
+    
+- name:           Execute the ses silently 
+  shell:          "cd {{ses_gtwysrvr_path}}/ && . ./cfgenv.sh && cd {{ses_config_path}}/  && ./config.sh -mode enterprise -responsefile {{siebweb_userhome}}/{{ses_responsefile_rsp}}"
+  register:       ses_output
+  when:           ses_path_installed.stat.exists == true  
+  
+- debug:          var=ses_output.stdout_lines    
+  when:           ses_path_installed.stat.exists == true
+  
+- debug:
+    msg:          "!!!!!!!!!!!!!!!!!ses path DOESNOTEXIST!!!!!!!!!!!!!!!!!"  
+  when:           ses_path_installed.stat.exists == false

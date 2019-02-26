@@ -1,0 +1,38 @@
+---
+
+- name: Create temp repo
+  win_file:
+    path: "{{ temp_repo }}"
+    state: directory
+- name: Install git
+  win_chocolatey:
+    name: git
+    state: present  
+#download artifacts
+- name: Get the repo package
+  win_git:
+    repo:   "{{ rulebases_git_repo }}"    
+    branch: "{{ rulebases_git_head }}" 
+    dest:   "{{ temp_repo }}"    
+    update: no
+    replace_dest: yes  
+    accept_hostkey: yes  
+- name: Copy SCRIPTS FOLDER to windows folder
+  win_copy: 
+     remote_src: yes
+     src:     "{{ temp_repo }}{{ vsts_git_path }}{{ item.zipappname }}"
+     dest:    "{{ deploy_scripts }}"
+  with_items: "{{ deploy_apps }}"
+  become: false
+- name: Delete temp repo
+  win_file:
+     state: absent
+     path:  "{{ temp_repo }}"      
+#- name: Copy app-zip to windows
+#  win_copy:
+#    src: ./{{ item.zipappname }}
+#    dest: C:\TEMP\TestStaticContent\staging\{{ item.env1 }}\{{ item.app1}}\
+#  become: false  
+#  ignore_errors: true   
+#  changed_when: false
+#  with_items: "{{ deploy_apps }}"   

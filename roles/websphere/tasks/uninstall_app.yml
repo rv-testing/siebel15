@@ -1,0 +1,12 @@
+---
+- name: Building the uninstall script
+  template:
+    src=was_uninstall_app.j2
+    dest=/opaapp_01/appopa1/scripts/was_uninstall_app.py
+    
+- name: Execute the uninstall script
+  shell: "{{was_install_location}}/bin/wsadmin.sh -lang jython -username {{websphere_admin}} -password {{websphere_admin_pwd}} -f {{deploy_scripts}}/was_uninstall_app.py"
+  register:  output
+  ignore_errors: true
+  
+- debug: var=output.stdout_lines  

@@ -1,0 +1,19 @@
+RESPONSEFILE_VERSION={{ses_install_RESPONSEFILE_VERSION}}
+s_shiphomeLocation={{ses_install_s_shiphomeLocation}}
+FROM_LOCATION={{ses_install_FROM_LOCATION}}
+s_topLevelComp={{ses_install_s_topLevelComp}}
+s_SiebelVersion={{ses_install_s_SiebelVersion}}
+s_installType={{ses_install_s_installType}}
+ORACLE_HOME={{ses_install_ORACLE_HOME}}
+INVENTORY_LOCATION={{ses_install_INVENTORY_LOCATION}}
+ORACLE_HOME_NAME={{ses_install_ORACLE_HOME_NAME}}
+b_isGatewayInstalled="true"
+b_isSiebsrvrInstalled="false"
+b_isDBInstalled="false"
+b_isEAIInstalled="false"
+## Warning: Do not check LDAP Client option if Oracle Database Client has been pre-installed. Use the existing Oracle Database Client for LDAP configuration for Siebel.
+b_isLDAPInstalled="false"
+selectedLangs={{ses_install_selectedLangs}}
+DEINSTALL_LIST={"{{ses_install_oracle_siebel_ses}}","{{siebel_version}}"}
+SHOW_DEINSTALL_CONFIRMATION=true
+SHOW_DEINSTALL_PROGRESS=true

@@ -1,0 +1,128 @@
+---
+
+- name: variable precedence test
+  hosts: all
+  tasks:
+    - include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "group_vars/{{ env }}/vault.yml"
+        - "group_vars/{{ env }}/vars.yml"
+  tags: always
+  
+- name: Prepare Linux Machine with pre-requisites for IHS
+  hosts: ihs_linux
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    ihs_prep: True
+    registered_rhel: False
+  tags: 
+    - ihs_install
+    - ihs_prep
+    - yum_install
+    
+
+    
+- name: Create Pre-requisites Common
+  hosts: ihs_linux
+  become: true
+  any_errors_fatal: True
+  roles:
+    - common
+  vars:
+    create_full_filesystem: False
+    app_user_create: True
+    download_library_yum_6: False
+  tags: 
+    - ihs_prep
+    - ihs_install
+  
+    
+
+- name: Ihs Miscellaneous
+  hosts: ihs_linux
+  become: true
+  any_errors_fatal: True
+  roles:
+    - ihs
+  vars:
+    ihs_misc: True
+  tags: 
+    - ihs_prep
+    - ihs_install
+            
+
+- name: Install IBM Manager 
+  hosts: ihs_linux
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    imgr_install: True
+    imgr_install_force: False
+  tags: 
+    - imgr_install
+    - ihs_prep
+    - ihs_install    
+    
+
+            
+- name: Install IHS
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    ihs_install: True
+    ihs_install_force: False
+  tags: 
+    - ihs_install
+    - ihs_install_only
+    
+
+- name: Start IHS application
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    ihs_start: True
+  tags: 
+    - ihs_start
+    - ihs_install 
+        
+    
+- name: Stop IHS application
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    ihs_stop: True
+  tags: 
+    - ihs_stop
+
+         
+    
+- name: Cleanup
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    cleanup: True
+  tags: 
+    - cleanup  
+        

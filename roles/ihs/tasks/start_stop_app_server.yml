@@ -1,0 +1,19 @@
+---
+
+- name: Start IHS
+  shell: "sudo {{ibm_directory}}/HTTPServer/bin/startapa"
+  register: ihs_start_out
+  ignore_errors: true
+  when: ihs_start | default(False) == True
+
+- debug: var=ihs_start_out.stdout_lines
+  when: ihs_start | default(False) == True
+
+- name: Stop IHS
+  shell: "sudo {{ibm_directory}}/HTTPServer/bin/stopapa"
+  register: ihs_stop_out
+  ignore_errors: true
+  when: ihs_stop | default(False) == True
+
+- debug: var=ihs_stop_out.stdout_lines
+  when: ihs_stop | default(False) == True  

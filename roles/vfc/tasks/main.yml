@@ -1,0 +1,25 @@
+---
+
+- include_tasks: win_ping.yml
+  when: win_ping | default(False) == True   
+  
+- include_tasks: prep_linux.yml
+  when: prep_linux | default(False) == True   
+
+- include_tasks: prep_windows.yml
+  when: prep_windows | default(False) == True   
+  
+- include_tasks: trigger_linux.yml
+  when: trigger_linux | default(False) == True   
+
+- include_tasks: trigger_windows.yml
+  when: trigger_windows | default(False) == True   
+  
+- include_tasks: post_linux.yml
+  when: post_linux | default(False) == True   
+
+- include_tasks: post_windows.yml
+  when: post_windows | default(False) == True   
+  
+
+  

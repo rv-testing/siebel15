@@ -1,0 +1,6 @@
+---
+app_user: appbip1
+app_dir: /bipapp_01
+filesystem_type: ext4
+physical_disk: /dev/sdc1
+physical_disk_raw: /dev/sdc

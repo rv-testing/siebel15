@@ -1,0 +1,189 @@
+---
+- name: variable precedence test
+  hosts: opa_linux
+  tasks:
+    - include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "group_vars/{{ env }}/vault.yml"
+        - "group_vars/{{ env }}/vars.yml"
+  tags: always
+
+- name: Create Pre-requisites
+  hosts: opa_linux
+  become: true
+  any_errors_fatal: True
+  roles:
+    - common
+  vars:
+    create_full_filesystem: False
+    app_user_create: True
+    download_library_yum_7: False
+  tags: 
+    - pre_tasks
+    - install_was
+    - full_deployment
+  
+- name: Prepare Linux Machine with pre-requisites
+  hosts: opa_linux
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    was_prep: True
+  tags: 
+    - install_was
+    - was_prep
+    - full_deployment
+    
+- name: Install Installation Manager and WAS
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    install_imgr: True
+    install_was: True
+    was_profile_create: True
+    is_standalone: True
+    start_was: True
+  tags: 
+    - install_was
+    - full_deployment
+
+- name: Install Fixpack
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    install_fixpack: True
+  tags: install_fixpack
+
+- name: Stop websphere application
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    stop_was: True
+  tags: stop_was
+  
+- name: Start websphere application
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    start_was: True
+  tags: start_was
+  
+- name: Deploy websphere application
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    deploy_app: True
+  tags: 
+    - deploy_app
+    - full_deployment
+  
+- name: Deploy websphere rulebases
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    deploy_rulebases: True
+  tags: 
+    - deploy_rulebases
+    - full_deployment
+  
+- name: Start websphere application
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    start_app: True
+  tags: start_app
+
+- name: Stop websphere application
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    stop_app: True
+  tags: stop_app
+  
+- name: Uninstall websphere application
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    uninstall_app: True
+  tags: uninstall_app
+    
+- name: Uninstall websphere profile
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    uninstall_profile: True
+  tags: uninstall_profile
+    
+- name: Start websphere profile
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    start_profile: True
+  tags: start_profile
+  
+- name: Stop websphere profile
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    stop_profile: True
+  tags: stop_profile  
+     
+- name: Uninstall WAS
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+   - websphere
+  vars: 
+   uninstall_was: True
+  tags: uninstall_was   
+
+- name: Uninstall ALL
+  hosts: opa_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+   - websphere
+  vars: 
+   uninstall_all: True
+  tags: uninstall_all   
+         

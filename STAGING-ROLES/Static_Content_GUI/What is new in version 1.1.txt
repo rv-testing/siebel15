@@ -1,0 +1,18 @@
+What's new in version 1.1
+===========================
+- There will be only one executable for all servers. 
+- I have Added an optional variable in static_deploy.properties to show server type & server name in the Title bar:
+	server_type=Internet
+
+  Please note that if server_type is defined in static_deploy.properties then Title Bar will show 
+  the serevr type plus the server name where Application is running otherwise Title will show only the server name.
+
+- In static_deploy.properties, please keep the temp folder name without any path (to keep it local), to avoid any access issue.
+	
+	temp_folder=temp
+
+  this temporary folder will be empty all the time and it is used and then cleaned  during the application deployment process.
+  
+
+- Log file improved with some additional details.
+  

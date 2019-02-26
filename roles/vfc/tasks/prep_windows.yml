@@ -1,0 +1,107 @@
+---
+
+#convert to upper case
+
+- name: Make upper.py executable
+  shell: chmod u+x roles/vfc/files/upper.py
+  delegate_to: localhost
+  run_once: true
+
+- name: Remove the header of the windows.csv
+  shell: awk 'FNR > 1 { print  $0 }' windows.csv > upper.txt
+  delegate_to: localhost
+  run_once: true
+
+- name: Convert all hostname to uppercase
+  shell: ./roles/vfc/files/upper.py upper.txt
+  delegate_to: localhost
+  run_once: true
+  
+- name: Create windows.csv header 
+  shell: echo Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk,Check-Host-ip > windows.csv
+  delegate_to: localhost
+  run_once: true
+  
+- name: Put back the rest to windows.csv
+  shell: cat upper.txt >> windows.csv
+  delegate_to: localhost
+  run_once: true
+  
+
+- name: Create wins3.ini inventory 1
+  shell: printf "\tASDF\n" | awk -F',' '$1' windows.csv > temp0  
+  delegate_to: localhost
+  run_once: true 
+  
+- name: Create wins3.ini inventory 2
+  shell: awk -F',' 'FNR > 1 { print  $4 " ansible_host="$1 }' temp0 > temp
+  delegate_to: localhost
+  run_once: true
+  
+- name: Create wins3.ini inventory 3
+  shell: awk NF temp > temp0001
+  delegate_to: localhost
+  run_once: true  
+
+- name: Create wins3.ini inventory 4
+  shell: cat temp0001 | sort > inventory/wins3.ini
+  delegate_to: localhost
+  run_once: true  
+
+- name: Make create-comma.sh executable
+  shell: chmod u+x roles/vfc/files/create-comma.sh
+  delegate_to: localhost
+  run_once: true
+
+- name: Make combine.py executable
+  shell: chmod u+x roles/vfc/files/combine.py
+  delegate_to: localhost
+  run_once: true
+
+
+- name: Create wins2.ini inventory 1
+  shell: ./roles/vfc/files/create-comma.sh
+  delegate_to: localhost
+  run_once: true
+
+- name: Create wins2.ini inventory 2
+  shell: ./roles/vfc/files/combine.py > temp003
+  delegate_to: localhost
+  run_once: true
+  
+- name: Create wins2.ini inventory 3
+  shell: printf "\tASDF\n" | awk -F',' '$2' temp003 > temp03
+  delegate_to: localhost
+  run_once: true 
+
+- name: Create wins2.ini inventory 4
+  shell: awk -F',' 'FNR > 1 { print $8 " ansible_host="$2 }' temp03 > temp3
+  delegate_to: localhost
+  run_once: true
+
+- name: Create wins2.ini inventory 5
+  shell: cat temp3 | uniq | sort > temp4
+  delegate_to: localhost
+  run_once: true   
+  
+- name: Create wins2.ini inventory 6
+  shell: awk NF temp4 > inventory/wins2.ini
+  delegate_to: localhost
+  run_once: true    
+  
+ 
+ 
+- name: Create loop variables 1
+  shell: chmod u+x roles/vfc/files/create-loop.py
+  delegate_to: localhost
+  run_once: true
+  
+- name: Create loop variables 2
+  shell: ./roles/vfc/files/create-loop.py windows.csv
+  delegate_to: localhost
+  run_once: true
+
+- name: Delete temp files
+  shell: rm -f epel* temp* error cp-csv sshcopy windows.yml upper.txt comma.csv
+  delegate_to: localhost
+  

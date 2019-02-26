@@ -1,0 +1,8 @@
+---
+servers:
+ - server1: vm1
+   server2: vm2
+   port: 90
+ - server1: vm2
+   server2: vm1
+   port: 80

@@ -1,0 +1,11 @@
+cron report for hc_status;
+==============================
+- Python script WL_hc_cron.py will generate detailed Weblogic Domain Health Report for given WL domain
+- cron command will be issued from tsoadmin
+- it goes through each domain entry in /opt/wl12c/scripts/.hc.server.conf and generate detailed Weblogic Domain Health Report for each domain on server domain.
+- created domain status report should be created to central location /opt/tso/log/wls_hc_hist/<domainID> (directory will be created if doesn't exist)
+
+- created cron job for every hour only on server1 of each environments like STAGE, UAT & UAT2
+#generate Weblogic Health check report every hour
+0 * * * * /opt/wl12c/scripts/hc_status_cron.ksh > /opt/tso/log/wls_hc_hist/hc_status_cron.log  2>&1
+

@@ -1,0 +1,43 @@
+---
+
+- include_tasks: siebel_prep.yml
+  when: siebel_prep | default(False) == True
+ 
+- include_tasks: siebweb_install.yml
+  when: siebweb_install | default(False) == True
+
+- include_tasks: ses_install.yml
+  when: ses_install | default(False) == True 
+
+- include_tasks: siebel_install.yml
+  when: siebel_install | default(False) == True 
+
+- include_tasks: ses_extract.yml
+  when: ses_extract | default(False) == True 
+  
+- include_tasks: ses_profile.yml
+  when: ses_profile | default(False) == True   
+
+- include_tasks: webserver_extract.yml
+  when: webserver_extract | default(False) == True
+  
+- include_tasks: webserver_fetch.yml
+  when: webserver_fetch | default(False) == True  
+
+- include_tasks: webserver_copy.yml
+  when: webserver_copy | default(False) == True
+
+- include_tasks: siebweb_profile.yml
+  when: siebweb_profile | default(False) == True
+
+- include_tasks: ses_gateway.yml
+  when: ses_gateway | default(False) == True
+
+- include_tasks: ses_enterprise.yml
+  when: ses_enterprise | default(False) == True
+
+- include_tasks: siebel_server.yml
+  when: siebel_server | default(False) == True
+  
+- include_tasks: cleanup.yml  
+  when: cleanup | default(False) == True   

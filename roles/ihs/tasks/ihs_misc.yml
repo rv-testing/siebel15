@@ -1,0 +1,17 @@
+---
+
+- name:           Allow user to sudoers
+  lineinfile:
+    dest:         /etc/sudoers
+    state:        present
+    regexp:       '^{{app_user}}'
+    line:         '{{app_user}} ALL=(ALL) NOPASSWD: ALL'
+    validate:     'visudo -cf %s'
+  
+- name:           chmod and chown to user and group 
+  file:
+    path:         "{{app_dir}}"
+    owner:        "{{app_user}}"
+    group:        "{{app_group}}"
+    mode:         0755
+    recurse:      yes

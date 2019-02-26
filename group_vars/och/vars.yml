@@ -1,0 +1,14 @@
+---
+app_user: appoch1
+app_dir: /ochapp_01
+app_group: tsoapps
+super_user: root
+
+filesystem_type: ext4
+physical_disk: /dev/sdb1
+physical_disk_raw: /dev/sdb
+size_of_lvm: 30G
+
+#CHANGE THE ETHX ACCORDING TO THE SERVER IP!!!
+ses_host: "{{hostvars[groups['ses_linux'][0]].ansible_eth0.ipv4.address}}"
+siebel_host: "{{hostvars[groups['siebel_linux'][0]].ansible_eth1.ipv4.address}}"

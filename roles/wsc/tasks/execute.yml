@@ -1,0 +1,15 @@
+---
+#execute python and stage it  
+     
+- name: Run the python static content
+  win_command: .\stContentDeploy_cmd.exe  {{ item.env1 }} {{ item.app1 }}
+  args:
+    chdir: C:\TEMP\TestStaticContent\scripts\     
+  register: out
+  changed_when: false
+  with_items: "{{ deploy_apps }}"
+  
+- debug: var=item.stdout_lines
+  with_items: "{{ out.results }}"
+  
+    

@@ -1,0 +1,14 @@
+---
+- name:          Install pre-requisites
+  yum:           name={{item}} state=present
+  with_items:
+    - unzip
+    - tar
+    - wget
+    - git
+  when:          (ansible_distribution == "RedHat") or (ansible_distribution == "CentOS")
+
+- name: Create Folders for WAS installation
+  file: path={{ item }} owner={{app_user}} group={{ app_group }} mode=0755 state=directory
+  with_items: 
+    - "{{was_directories}}"

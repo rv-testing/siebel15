@@ -1,0 +1,253 @@
+---
+
+siebel_version:       15.0.0.0.0
+siebel_patch_version: 15.9.0.0.0
+siebel_ibm_directory: "{{app_dir}}/IBM"
+
+siebel_version_path: "{{app_dir}}/{{siebel_version}}"
+siebweb_path: "{{siebel_version_path}}/siebweb"
+siebweb_config: "{{siebweb_path}}/config"
+siebweb_webserver: "{{siebweb_path}}/Webserver"
+siebweb_userhome: "{{app_dir}}/{{app_user}}"
+siebweb_sfw: "{{app_dir}}/sfw"
+siebweb_sfw_webserver: "{{siebweb_sfw}}/Webserver"
+
+siebweb_install_folder: 15.0.0.0
+siebel_patch_folder: 15.9.0.0.patchset9
+siebweb_source_disk1: "{{siebweb_sfw}}/{{siebweb_install_folder}}/Linux/Server/Siebel_Web_Server_Extension/Disk1"
+siebweb_source: "{{siebweb_source_disk1}}/install"
+siebweb_source_patch_disk1: "{{siebweb_sfw}}/{{siebel_patch_folder}}/Linux/Server/Siebel_Web_Server_Extension/Disk1"
+siebweb_source_patch: "{{siebweb_source_patch_disk1}}/install"
+siebweb_orainventory: "{{app_dir}}/oraInventory"
+
+siebel_repository_url: https://sdcdev01stal01ltcrus.blob.core.windows.net/tso/RLSO/software/IHS8.5.5.9/
+#siebel_repository_url: http://192.168.3.111/
+siebel_java_url: https://sdcdev01stal01ltcrus.blob.core.windows.net/tso/RLSO/software/Siebel_IP2015/OracleJRE_1.8/
+#siebel_java_url: http://192.168.3.111/
+siebel_patch_url: https://sdcdev01stal01ltcrus.blob.core.windows.net/tso/RLSO/software/Siebel_IP2015/Linux/
+#siebel_patch_url: http://192.168.3.111/
+siebel_responsefile_url: https://sdcdev01stal01ltcrus.blob.core.windows.net/tso/RLSO/config%20files/Siebel/SBL/
+#siebel_responsefile_url: http://192.168.3.111/
+ses_repository_url: https://sdcdev01stal01ltcrus.blob.core.windows.net/tso/RLSO/software/Siebel_IP2015/Linux/
+#ses_repository_url: http://192.168.3.111/
+
+
+siebweb_zip:           15.0.0.0.zip
+siebweb_patch_zip:     15.9.0.0.patchset9.zip
+siebweb_webserver_zip: Webserver.zip
+siebweb_responsefile_patch: siebel_webserver_ext_patch.rsp
+siebweb_orainst_base: oraInst
+siebweb_orainst: "{{siebweb_orainst_base}}.loc"
+siebweb_orainst_j2: "{{siebweb_orainst_base}}.j2"
+siebweb_java_zip: jre1.8.0_151.zip
+siebweb_java_path: "{{app_dir}}/jre1.8.0_151"
+
+
+siebweb_dependencies:
+    - unzip
+    - tar
+    - wget
+    - git
+    - glibc.i686
+    - glibc
+    - glib2
+    - glibc-common
+    - glibc-headers
+    - glibc-devel
+    - compat-libstdc++-33 
+    - libaio-devel 
+    - compat-libcap1-1.10 
+    - ksh     
+    - libXtst        
+    - liberation-sans-fonts 
+    - elfutils-libelf
+    - libstdc++-devel.i686
+    - compat-libstdc++-33.i686
+    - libaio-devel.i686  
+    - libXext.i686 
+    - gcc-c++  
+    - libstdc++
+    - elfutils-libelf-devel.i686          
+    
+
+siebweb_directories:
+  - "{{app_dir}}"    
+  - "{{siebweb_orainventory}}"
+  - "{{siebweb_sfw}}"
+  - "{{siebel_version_path}}"
+  
+
+ses_zip: ses.zip
+ses_path:   "{{siebel_version_path}}/ses"
+ses_gtwysrvr_path: "{{ses_path}}/gtwysrvr"
+ses_admin_path: "{{ses_gtwysrvr_path}}/admin"
+ses_webserver_path: "{{siebweb_sfw}}/Webserver"
+ses_config_path:   "{{ses_path}}/config"
+ses_source_disk1: "{{siebweb_sfw}}/{{siebweb_install_folder}}/Linux/Server/Siebel_Enterprise_Server/Disk1"
+ses_source: "{{ses_source_disk1}}/install"
+ses_source_patch_disk1: "{{siebweb_sfw}}/{{siebel_patch_folder}}/Linux/Server/Siebel_Enterprise_Server/Disk1"
+ses_source_patch: "{{ses_source_patch_disk1}}/install"
+ses_gtwysrvr_fs_path:  "{{ses_gtwysrvr_path}}/fs"
+
+ses_responsefile_ContLoginPassword: J0kt+nDWOfsBq4QAAA==
+ses_responsefile_EmplLoginPassword: 5uMocZTPxtABv8QAAA==
+ses_responsefile_ContLoginUserName: SADMIN
+ses_responsefile_ContLoginPasswordInput: "{{ses_responsefile_ContLoginUserName}}"
+ses_responsefile_EmplLoginPasswordInput: "{{ses_responsefile_ContLoginUserName}}"
+ses_responsefile_EmplLoginUserName: "{{ses_responsefile_ContLoginUserName}}"
+ses_responsefile_EnterpriseServer: CR_SBLDEV1
+ses_responsefile_SiebelEnterprise: "{{ses_responsefile_EnterpriseServer}}"
+ses_responsefile_SessionTimeout: 900
+ses_responsefile_tcEappHttpPort: 80
+ses_responsefile_tcEappHttpsPort: 443
+ses_responsefile_GuestSessionTimeout: 300
+ses_responsefile_PrimaryLanguage: enu
+ses_responsefile_SiebelLanguage: ENU
+ses_responsefile_SiebelVersion: "{{siebweb_install_folder}}SIA[23048]{{ses_responsefile_SiebelLanguage}}"
+ses_responsefile_StatsPage: _stats.swe
+ses_responsefile_TLSSSLConfiguration: None
+ses_responsefile_WebUpdatePassword: /Pt7LoEaTDMBfV0AAA==
+#ses_responsefile_WebUpdatePasswordInput: ***stored in vault***
+ses_responsefile_SWSEServer: "{{ses_webserver_path}}"
+ses_responsefile: ses_profile
+ses_responsefile_j2: "{{ses_responsefile}}.j2"
+ses_responsefile_rsp: "{{ses_responsefile}}.rsp"
+
+siebweb_responsefile_WebServerInstance: "{{siebel_ibm_directory}}/HTTPServer"
+siebweb_responsefile_DeployedLanguage: "enu,fra"
+siebweb_responsefile_SiebelLanguage: ENU
+siebweb_responsefile_SCBPort: 2321
+siebweb_responsefile_LoadBalancerOption: SiebelLoadBalancer
+siebweb_responsefile_RestartWebServer: false
+siebweb_responsefile_siebweb_webserver : "{{siebweb_webserver}}"
+siebweb_responsefile_siebweb_path : "{{siebweb_path}}"
+siebweb_responsefile_siebel_version : "{{siebel_version}}"
+siebweb_responsefile_SiebelVersion: "{{siebweb_install_folder}}SIA[23048]{{ses_responsefile_SiebelLanguage}}"
+#siebweb_responsefile_LoadBalancingServer: "{{siebweb_responsefile_AppServerHostName}}:{{siebweb_responsefile_SCBPort}}"
+siebweb_responsefile_LoadBalancingServer: VirtualServer
+siebweb_responsefile_eappscfgExists: "{{ses_webserver_path}}/eapps.cfg"
+siebweb_responsefile_eappsprofile: "{{ses_webserver_path}}"
+siebweb_responsefile_SiebelTempDir: "{{siebweb_responsefile_siebweb_path}}/temp"
+siebweb_responsefile_SWSEServer: "{{siebweb_path}}/admin/Webserver"
+siebweb_responsefile: siebweb_profile
+siebweb_responsefile_j2: "{{siebweb_responsefile}}.j2"
+siebweb_responsefile_rsp: "{{siebweb_responsefile}}.rsp"
+
+# Note: On creating the template of the response file, always verify the changes on the outcome, the special character like '" are crucial to get the exact response file.
+siebweb_install_RESPONSEFILE_VERSION: 2.2.1.0.0
+siebweb_install_s_shiphomeLocation: '"{{siebweb_source}}"'
+siebweb_install_FROM_LOCATION: '"{{siebweb_source_disk1}}/stage/products.xml"'
+siebweb_install_oracle_siebel_eappweb: oracle.siebel.eappweb
+siebweb_install_s_topLevelComp: '"{{siebweb_install_oracle_siebel_eappweb}}"'
+siebweb_install_s_SiebelVersion: '"{{siebel_version}}"'
+siebweb_install_s_installType: '"New Installation"'
+siebweb_install_ORACLE_HOME: '"{{siebweb_path}}"'
+siebweb_install_ORACLE_HOME_NAME: '"SIEBWEB_HOME"'
+siebweb_install_selectedLangs: '"[English, French]"'
+siebweb_install_s_txt_seedValue: '"SIEBSEED"'
+siebweb_install_responsefile: siebweb_install
+siebweb_install_responsefile_j2: "{{siebweb_install_responsefile}}.j2"
+siebweb_install_responsefile_rsp: "{{siebweb_install_responsefile}}.rsp"
+
+siebweb_install_patch_RESPONSEFILE_VERSION: "{{siebweb_install_RESPONSEFILE_VERSION}}"
+siebweb_install_patch_s_shiphomeLocation: '"{{siebweb_source_patch_disk1}}"'
+siebweb_install_patch_FROM_LOCATION: '"{{siebweb_source_patch_disk1}}/stage/products.xml"'
+siebweb_install_patch_s_topLevelComp: '"{{siebweb_install_oracle_siebel_eappweb}}"'
+siebweb_install_patch_s_SiebelVersion: '"{{siebel_patch_version}}"'
+siebweb_install_patch_ORACLE_HOME: '"{{siebweb_path}}"'
+siebweb_install_patch_ORACLE_HOME_NAME: '{{siebweb_install_ORACLE_HOME_NAME}}'
+siebweb_install_patch_selectedLangs: "{{siebweb_install_selectedLangs}}"
+siebweb_install_patch_responsefile: siebweb_install_patch
+siebweb_install_patch_responsefile_j2: "{{siebweb_install_patch_responsefile}}.j2"
+siebweb_install_patch_responsefile_rsp: "{{siebweb_install_patch_responsefile}}.rsp"
+
+
+ses_install_RESPONSEFILE_VERSION: "{{siebweb_install_RESPONSEFILE_VERSION}}"
+ses_install_s_shiphomeLocation: '"{{ses_source_disk1}}"'
+ses_install_FROM_LOCATION: '"{{ses_source_disk1}}/stage/products.xml"'
+ses_install_oracle_siebel_ses: oracle.siebel.ses
+ses_install_s_topLevelComp: '"{{ses_install_oracle_siebel_ses}}"'
+ses_install_s_SiebelVersion: '"{{siebel_version}}"'
+ses_install_s_installType: '"New Installation"'
+ses_install_ORACLE_HOME: '"{{ses_path}}"'
+ses_install_INVENTORY_LOCATION: "{{siebweb_orainventory}}/{{siebweb_orainst}}"
+ses_install_ORACLE_HOME_NAME: '"SES_HOME"'
+ses_install_selectedLangs: '"[English, French]"'
+ses_install_responsefile: ses_install
+ses_install_responsefile_j2: "{{ses_install_responsefile}}.j2"
+ses_install_responsefile_rsp: "{{ses_install_responsefile}}.rsp"
+
+ses_install_patch_RESPONSEFILE_VERSION: "{{ses_install_RESPONSEFILE_VERSION}}"
+ses_install_patch_s_shiphomeLocation: '"{{ses_source_patch_disk1}}"'
+ses_install_patch_FROM_LOCATION: '"{{ses_source_patch_disk1}}/stage/products.xml"'
+ses_install_patch_oracle_siebel_ses: "{{ses_install_oracle_siebel_ses}}"
+ses_install_patch_s_topLevelComp: '"{{ses_install_patch_oracle_siebel_ses}}"'
+ses_install_patch_s_SiebelVersion: '"{{siebel_patch_version}}"'
+ses_install_patch_ORACLE_HOME: '"{{ses_path}}"'
+ses_install_patch_ORACLE_HOME_NAME: "{{ses_install_ORACLE_HOME_NAME}}"
+ses_install_patch_selectedLangs: "{{ses_install_selectedLangs}}"
+ses_install_patch_responsefile: ses_install_patch
+ses_install_patch_responsefile_j2: "{{ses_install_patch_responsefile}}.j2"
+ses_install_patch_responsefile_rsp: "{{ses_install_patch_responsefile}}.rsp"
+
+ses_gateway_responsefile: ses_gateway
+ses_gateway_responsefile_j2: "{{ses_gateway_responsefile}}.j2"
+ses_gateway_responsefile_rsp: "{{ses_gateway_responsefile}}.rsp"
+ses_gateway_bash_profile: .bash_profile
+ses_gateway_bash_profile_j2: ses_gateway_bash_profile.j2
+ses_gateway_siebenv_sh: siebenv.sh
+ses_gateway_siebenv_sh_j2: ses_gateway_siebenv_sh.j2
+ses_gateway_NamesrvrPortPick: 2320
+ses_gateway_EnterpriseCreateDefault: SBA_82
+ses_gateway_MSSQL_DRIVER_NAME: "SQL Server Native Client 11.0"
+ses_enterprise_responsefile_ConnectString: POCDEV2
+ses_enterprise_responsefile_DBTableOwnerParam: SIEBEL
+ses_enterprise_DatabasePlatform: OracleCBO
+ses_enterprise_EntVertical: sia
+ses_enterprise_responsefile: ses_enterprise
+ses_enterprise_responsefile_j2: "{{ses_enterprise_responsefile}}.j2"
+ses_enterprise_responsefile_rsp: "{{ses_enterprise_responsefile}}.rsp"
+ses_enterprise_ConnectorDll: sscdo90
+siebel_server_responsefile: siebel_server
+siebel_server_responsefile_j2: "{{siebel_server_responsefile}}.j2"
+siebel_server_responsefile_rsp: "{{siebel_server_responsefile}}.rsp"
+siebel_server_current_section: OracleConnector
+siebel_server_LocalSynchMgrPort: 40400
+
+ses_sblsrvr_bash_profile: "{{ses_gateway_bash_profile}}"
+ses_sblsrvr_bash_profile_j2: ses_sblsrvr_bash_profile.j2
+ses_sblsrvr_siebenv_sh: "{{ses_gateway_siebenv_sh}}"
+ses_sblsrvr_siebenv_sh_j2: ses_sblsrvr_siebenv_sh.j2
+
+siebel_siebsrvr: "{{ses_path}}/siebsrvr"
+siebel_server_bash_profile: "{{ses_gateway_bash_profile}}"
+siebel_server_bash_profile_j2: siebel_server_bash_profile.j2
+siebel_server_siebenv_sh: "{{ses_gateway_siebenv_sh}}"
+siebel_server_siebenv_sh_j2: siebel_server_siebenv_sh.j2
+
+
+oracle_base: "{{app_dir}}/oraclient_home/app/oraclt1"
+siebel_OSType: i386
+siebel_OperatingSystem: linux
+siebel_RequestComponent: SRMSynch
+siebel_first_section: InitialSetup
+siebel_first_step: MainTask
+siebel_Vertical_Extension: _sia
+siebel_ConfigMode: VERT
+siebel_CnxnProtocol: TCPIP
+siebel_SibelAnyDesc: "SQL Anywhere"
+siebel_CurrentRegistryRoot: "HKEY_LOCAL_MACHINE"
+siebel_Host: localhost.localdomain
+siebel_SiebelServerDesc: "Siebel Server Profile"
+siebel_SyncStartTime: 000100
+siebel_TraceFile: odbctrace.out
+siebel_UnixOracleDb2DriverName: "MERANT 6.1 Oracle 11 Driver"
+siebel_EnterpriseServer: default
+
+siebel_install_responsefile: siebel_install
+siebel_install_responsefile_j2: "{{siebel_install_responsefile}}.j2"
+siebel_install_responsefile_rsp: "{{siebel_install_responsefile}}.rsp"
+
+siebel_install_patch_responsefile: siebel_install_patch
+siebel_install_patch_responsefile_j2: "{{siebel_install_patch_responsefile}}.j2"
+siebel_install_patch_responsefile_rsp: "{{siebel_install_patch_responsefile}}.rsp"

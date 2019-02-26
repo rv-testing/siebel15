@@ -1,0 +1,14 @@
+---
+- name: Start WebSphere 
+  shell: "{{ was_bin_directory }}/{{ start_was_script }} {{ app_profile_server }}"
+  register: start_was_server
+  when: start_was | default(False) == True
+
+- debug: var=start_was_server
+
+- name: Stop WebSphere 
+  shell: "{{was_bin_directory}}/{{stop_was_script}} {{app_profile_server}} -username {{websphere_admin}} -password {{websphere_admin_pwd}}"
+  register: stop_was_server
+  when: stop_was | default(False) == True
+
+- debug: var=stop_was_server.stdout_lines

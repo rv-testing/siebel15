@@ -1,0 +1,101 @@
+---
+- name: variable precedence test
+  hosts: bpm_linux
+  tasks:
+    - include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "group_vars/{{ env }}/vault.yml"
+        - "group_vars/{{ env }}/vars.yml"
+  tags: always
+
+- name: Create Pre-requisites
+  hosts: bpm_linux
+  become_user: "{{super_user}}"
+  any_errors_fatal: True
+  roles:
+    - common
+  vars:
+    create_full_filesystem: False
+    app_user_create: False
+    download_library_yum: False
+    
+- name: Stop websphere application
+  hosts: bpm_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    stop_was: True
+  tags: stop_was
+  
+- name: Start websphere application
+  hosts: bpm_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    start_was: True
+  tags: start_was
+  
+- name: Start DMGR in Clustered websphere application
+  hosts: bpm_linux_dmgr
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    start_dmgr: True
+  tags: start_was_cluster
+  
+- name: Start NODE in Clustered websphere application
+  hosts: bpm_linux_node
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    start_node: True
+  tags: start_was_cluster
+  
+- name: Start Servers Clustered websphere application
+  hosts: bpm_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    start_was: True
+  tags: start_was_cluster
+  
+- name: Stop Servers in Clustered websphere application
+  hosts: bpm_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    stop_was: True
+  tags: stop_was_cluster
+  
+- name: Stop NODE in Clustered websphere application
+  hosts: bpm_linux_node
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    stop_node: True
+  tags: stop_was_cluster
+  
+- name: Stop DMGR in Clustered websphere application
+  hosts: bpm_linux_dmgr
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - websphere
+  vars: 
+    stop_dmgr: True
+  tags: stop_was_cluster

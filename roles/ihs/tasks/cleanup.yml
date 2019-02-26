@@ -1,0 +1,15 @@
+---
+
+- name:           Delete files
+  file:
+    path:         "{{ item }}"
+    state:        absent    
+  ignore_errors:  true
+  with_items:     
+    - "{{app_dir}}/{{zip_imgr_file}}"
+    - "{{ app_dir }}/{{ zip_ihs_file }}"
+    - "{{app_dir}}/ibm_universal_installer"
+    - "{{ihs_ws_part1}}"
+    - "{{ihs_was_version}}"
+    - "{{app_dir}}/ibm_ihs_server.rsp"
+    - "{{staging_dir}}"

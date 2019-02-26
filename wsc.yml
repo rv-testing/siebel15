@@ -1,0 +1,32 @@
+---
+  
+- name: Create inventory and variables
+  hosts: localhost ansible_connection=local
+  gather_facts: false
+  roles: 
+    - wsc
+  vars:     
+    prep_run: True
+  tags: prep_run
+
+- name: Include group_vars
+  hosts: all
+  gather_facts: false
+  tasks:
+    - include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "group_vars/{{ env }}/vault.yml"
+        - "group_vars/{{ env }}/vars.yml"
+  tags: post_run
+          
+- name: Main post tasks
+  hosts: all
+  become_method: runas
+  gather_facts: false
+  roles: 
+    - wsc
+  vars: 
+    post_run: True  
+  tags: post_run
+    

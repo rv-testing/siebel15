@@ -1,0 +1,7 @@
+---
+  
+- name: kinit
+  local_action: command echo "{{ansible_password}}" | kinit -l 7d -r 7d -pf {{ansible_user}}
+  
+- name: win ping
+  win_ping:  

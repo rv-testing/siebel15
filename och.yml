@@ -1,0 +1,311 @@
+---
+
+# IHS ******************************************************
+
+- name: variable precedence test
+  hosts: all
+  strategy: free
+  tasks:
+    - include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "group_vars/{{ env }}/vault.yml"
+        - "group_vars/{{ env }}/vars.yml"
+  tags: always
+  
+- name: Prepare Linux Machine with pre-requisites
+  hosts: all
+  strategy: free
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    ihs_prep: True
+  tags: 
+    - ihs_install
+    - ihs_prep
+    - yum_install
+    - siebel_full  
+    
+- name: Create Pre-requisites Common
+  hosts: all
+  strategy: free
+  become: true
+  any_errors_fatal: True
+  roles:
+    - common
+  vars:
+    create_full_filesystem: False
+    app_user_create: True
+    download_library_yum_6: False
+  tags: 
+    - ihs_install
+    - ihs_prep
+    - siebel_full
+    
+- name: Server Miscellaneous
+  hosts: all
+  strategy: free
+  become: true
+  any_errors_fatal: True
+  roles:
+    - ihs
+  vars:
+    ihs_misc: True
+  tags: 
+    - ihs_prep
+    - ihs_install
+    - siebel_full    
+            
+
+- name: Install IBM Manager 
+  hosts: ihs_linux
+  strategy: free
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    imgr_install: True
+    imgr_install_force: False
+  tags: 
+    - imgr_install
+    - ihs_prep
+    - ihs_install
+    - siebel_full        
+    
+
+            
+- name: Install IHS
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    ihs_install: True
+    ihs_install_force: False
+  tags: 
+    - ihs_install
+    - ihs_install_only
+    - siebel_full    
+    
+
+- name: Start IHS application
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    ihs_start: True
+  tags: 
+    - ihs_start
+        
+    
+- name: Stop IHS application
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    ihs_stop: True
+  tags: 
+    - ihs_stop
+         
+    
+- name: Cleanup
+  hosts: all
+  strategy: free
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - ihs
+  vars: 
+    cleanup: True
+  tags: 
+    - cleanup  
+    - siebel_full            
+      
+# SIEBEL ******************************************************      
+      
+- name: Siebel Prep
+  hosts: all
+  strategy: free
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    siebel_prep: True
+  tags: 
+    - siebel_prep
+    - siebel_full    
+            
+    
+# Install the Siebel Webserver Extention
+- name: Siebweb Install
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    siebweb_install: True
+    siebweb_install_force: False
+    siebweb_install_patch_force: False
+  tags: 
+    - siebweb_install
+    - siebel_full
+    
+    
+# Install the Siebel Enterprise    
+- name: Ses Install
+  hosts: ses_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    ses_install: True
+    ses_install_force: False
+    ses_install_patch_force: False
+  tags: 
+    - ses_install
+    - siebel_full
+                
+
+- name: Siebel Server Install
+  hosts: siebel_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    siebel_install: True
+    siebel_install_force: False
+    siebel_install_patch_force: False
+  tags: 
+    - siebel_install
+    - siebel_full
+        
+    
+# Build/run the swse profile and will create the Webserver        
+- name: Ses Profile
+  hosts: ses_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    ses_profile: True      # main variable of ses_profile
+    ses_force_run: False   # force to run even if ../ses folder exist
+  tags: 
+    - ses_profile  
+    - siebel_full
+
+ 
+#This will copy the Webserver.zip to ansible 
+- name: Webserver Fetch
+  hosts: ses_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    webserver_fetch: True
+  tags: 
+    - webserver_fetch
+    - siebel_full        
+      
+#This will copy the Webserver.zip to ihs      
+- name: Webserver Copy
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    webserver_copy: True
+  tags: 
+    - webserver_copy
+    - siebel_full            
+      
+- name: Siebweb Profile
+  hosts: ihs_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    siebweb_profile: True
+  tags: 
+    - siebweb_profile  
+    - siebel_full
+ 
+    
+- name: Ses Gateway
+  hosts: ses_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    ses_gateway: True
+  tags: 
+    - ses_gateway 
+    #- siebel_full    
+
+- name: Ses Enterprise
+  hosts: ses_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    ses_enterprise: True
+  tags: 
+    - ses_enterprise 
+    #- siebel_full    
+
+- name: Siebel Server
+  hosts: siebel_linux
+  become_user: "{{app_user}}"
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    siebel_server: True
+  tags: 
+    - siebel_server 
+    #- siebel_full    
+    
+    
+- name: Cleanup
+  hosts: all
+  
+  become: true
+  any_errors_fatal: True
+  roles: 
+    - siebel
+  vars: 
+    cleanup: True
+  tags: 
+    - cleanup  
+    - siebel_full
+        

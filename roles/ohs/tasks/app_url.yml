@@ -1,0 +1,6 @@
+---
+- name: Add application host server to hosts file
+  lineinfile: 
+    path: /etc/hosts
+    line: '{{web_app_server_ip}}  {{web_app_server}}.{{domain_name}}  {{web_app_server}}'
+    state: present

@@ -1,0 +1,58 @@
+- copy .hc.server.conf, WL_hc_cron.py and hc_status_cron.ksh under a central repository location like  /opt/wl12c/scripts. 
+
+- Set execute permission 
+	chmod 755 hc_status_cron.ksh
+
+- under domain/bin directory, create soft link:
+	ln -s /opt/wl12c/scripts/hc_status_cron.ksh hc_status
+
+- now hc_status command can be executed from any domain.
+
+- executing 'hc_status'  will generate a detailed report to show WL health for current domain you logged in.
+
+- Health Check (HC) report will be generated in hidden (dot) file under the domain logs directory. 
+
+- log name will use naming format ".hc_<domainName>_<YYYYMMDD-HHMMSS>.log"
+
+some Report heading information :
+
+	- srvr_TTC					# ExecuteThreadTotalCount - The total number of threads in the pool.
+	
+	- srvr_AET					# The number of active execute threads in the pool.
+	
+	- srvr_IDL					# ExecuteThreadIdleCount - The number of idle threads in the pool. This count does not include standby threads and stuck threads. The count indicates threads that are ready to pick up new work when it arrives
+	
+	- srvr_HTC					# HoggingThreadCount - The threads that are being held by a request right now. These threads will either be declared as stuck after the configured timeout or will return to the pool before that. The self-tuning mechanism will backfill if necessary.
+	
+	- srvr_STC					# StuckThreadCount
+	
+	- srvr_PR					# PendingUserRequestCount
+	
+	- srvr_QL					# QueueLength - The number of pending requests in the priority queue. This is the total of internal system requests and user requests.
+	
+	- srvr_HeapFreePrcnt	 	#HeapFreePercent
+	
+	- srvr_CurHeap		  		#HeapSizeCurrent
+	
+	- srvr_MaxHeap		  		#HeapSizeMax
+	
+	
+	- TtlCon  		# The cumulative total number of database connections created in this data source since the data source was deployed.
+	
+	- ActHiCon  	# 	Highest number of active database connections in this instance of the data source 
+					#	since the data source was instantiated.. Active connections are connections in use by an application.
+					
+	- ActvC			# The number of connections currently in use by applications.
+	
+	- ActAvC		# Average number of active connections in this instance of the data source.
+					# Active connections are connections in use by an application. This value is only valid if the resource is configured to allow shrinking.
+				
+	- AvlCon		# The number of database connections that are currently idle and available to be used by applications in this instance of the data source.
+	
+	- WaitCon		# The cumulative, running count of requests for a connection from this data source that had to wait before getting a connection, including 
+					# those that eventually got a connection and those that did not get a connection.
+	
+	- WaitHCon		# The highest number of seconds that an application waited for a connection (the longest connection reserve wait time) from this instance of the 
+					# connection pool since the connection pool was instantiated.
+	
+		

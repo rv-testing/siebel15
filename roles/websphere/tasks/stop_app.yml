@@ -1,0 +1,12 @@
+---
+- name: Building the stop script
+  template:
+    src=was_stop_app.j2
+    dest=/opaapp_01/appopa1/scripts/was_stop_app.py
+
+- name: Execute the stop script
+  shell: "{{was_install_location}}/bin/wsadmin.sh -lang jython -username {{websphere_admin}} -password {{websphere_admin_pwd}} -f {{deploy_scripts}}/was_stop_app.py"
+  register:  output
+  ignore_errors: true
+  
+- debug: var=output.stdout_lines  

@@ -1,0 +1,94 @@
+---
+- name: Stop OHS http instance services
+  shell: "{{ohs_bin_dir}}/opmnctl stopall"
+  register: stop_ohs_ins
+  
+- debug: var=stop_ohs_ins.stdout_lines
+
+- name: comment default OHS listening port
+  replace: 
+    path: "{{component_config_dir}}/httpd.conf"
+    regexp: 'Listen 7777'
+    replace: 'Listen {{ ansible_default_ipv4.address }}:80'
+    
+- name: Add group to OHS http
+  lineinfile: 
+    dest: "{{component_config_dir}}/httpd.conf"
+    insertafter: '#Group GROUP_TEMPLATE'
+    line: 'Group {{app_group}}'
+    state: present
+
+- name:  Add content to OHS http configuration file
+  lineinfile: 
+    dest: "{{component_config_dir}}/httpd.conf"
+    line: '{{ item }}'
+  with_items: 
+    - '<VirtualHost *:80>'
+    - 'ServerName {{ansible_hostname}}.{{domain_name}}:80'
+    - 'RewriteEngine On'
+    - 'RewriteLogLevel 3'
+    - 'RewriteLog logs/rewrite_log'
+    - 'RewriteRule ^/?(.*) https://%{SERVER_NAME}/$1 [R,L]'
+    - '</VirtualHost>'
+  register: configure_httpd
+  
+- name: Replace SSL listen port
+  replace: 
+    path: "{{component_config_dir}}/ssl.conf"
+    regexp: 'Listen 4443'
+    replace: 'Listen 443' 
+    
+- name: Replace Virtual host port
+  replace: 
+    path: "{{component_config_dir}}/ssl.conf"
+    regexp: '4443'
+    replace: '443'
+  
+- name: Add content to OHS ssl configuration file
+  blockinfile: 
+    path: "{{component_config_dir}}/ssl.conf"
+    insertafter: "downgrade-1.0 force-response-1.0"
+    content: |
+         ServerName {{ansible_hostname}}.{{domain_name}}:443
+         RewriteEngine On
+         RewriteLogLevel 3
+         RewriteLog logs/rewrite_log
+         </IfModule>
+         <IfModule mod_proxy.c>
+         SSLProxyEngine On
+         ProxyPreserveHost On
+         ProxyRequests off
+         ProxyPass / {{weblogic_app_url}}:8010/
+         ProxyPassReverse / {{weblogic_app_url}}:8010/
+         SSLProxyWallet "${ORACLE_INSTANCE}/config/${COMPONENT_TYPE}/${COMPONENT_NAME}/keystores/ebs/wallet"
+         SSLWallet "${ORACLE_INSTANCE}/config/${COMPONENT_TYPE}/${COMPONENT_NAME}/keystores/ebs/wallet"
+  
+- name: Create keystore directory
+  file: 
+    path: "{{ohs_config_dir}}/OHS/ohs1/keystores/ebs"
+    state: directory
+    mode: 0755
+    
+- name: Create wallet directory
+  file: 
+    path: "{{ohs_config_dir}}/OHS/ohs1/keystores/ebs/wallet"
+    state: directory
+    mode: 0755
+
+- name: Copy application keys to OHS keystore
+  copy:
+    src: roles/ohs/files/{{env}}/wallet/cwallet.sso
+    dest: "{{ohs_config_dir}}/OHS/ohs1/keystores/{{env}}/wallet/cwallet.sso"
+    mode: 0754
+    
+- name: start OHS http instance services
+  shell: "{{ohs_bin_dir}}/opmnctl startall"
+  register: start_ohs_ins
+  
+- debug: var=start_ohs_ins.stdout_lines
+
+- name: check OHS properties
+  shell: "{{middleware_dir}}/Oracle_WT1/OPatch/opatch lsinventory"
+  register: check_ohs_version_properties
+  
+- debug: var=check_ohs_version_properties.stdout_lines

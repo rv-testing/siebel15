@@ -1,0 +1,23 @@
+
+
+Hostname,Check-Host,Port,IPAddress,CPUCore,RAM,Disk,Check-Host-ip
+win2,win3,9000,192.168.3.133,1,2,60,192.168.3.134
+win3,win2,8000,192.168.3.134,1,2,21.5,192.168.3.133
+
+
+[windows]
+192.168.122.11 ansible_host=WIN2
+
+[windows:vars]
+ansible_user=user1@TEST001.ORG
+ansible_password=Clark123456
+ansible_connection=winrm
+ansible_winrm_transport=kerberos
+ansible_port=5985
+
+https://www.python.org/ftp/python/3.6.4/python-3.6.4-amd64.exe
+
+C:\Users\user1\AppData\Local\Programs\Python\Python36
+
+cp scripts/static_deploy.properties roles/stage2/vars/common.yml
+sed -i 's/=/: /g' roles/stage2/vars/common.yml

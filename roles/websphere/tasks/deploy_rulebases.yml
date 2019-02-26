@@ -1,0 +1,43 @@
+  - block: 
+      - name: Pre-req check for the existing destination directory of the determinations-server application
+        register: exists_dest_determinations
+        stat: 
+            path: "{{ rulebases_determinations.dest }}"
+        when: rulebases_determinations.dest is defined
+
+      - name: Pre-req check for the existing destination directory of the siebel-web-determinations-server application
+        register: exists_dest_siebel_web_determinations
+        stat: 
+            path: "{{ rulebases_siebel_web_determinations.dest }}"
+        when: rulebases_siebel_web_determinations.dest is defined
+        
+      - name: Create temporary staging directory
+        register: temp_dir
+        tempfile:
+            state: directory
+
+      - name: Get the determinations rulebases package
+        git:
+            repo: "{{ rulebases_git_repo }}"
+            version: "{{ rulebases_git_head }}"
+            dest: "{{ temp_dir.path }}"
+
+      - name: Unarchive the determinations rulebases package
+        unarchive:
+            remote_src: yes
+            src: "{{ temp_dir.path }}/{{ rulebases_determinations.pkg }}"
+            dest: "{{ rulebases_determinations.dest }}"
+        when: exists_dest_determinations.stat is defined and exists_dest_determinations.stat.exists == true
+
+      - name: Unarchive the siebel-web-determinations rulebases package
+        unarchive:
+            remote_src: yes
+            src: "{{ temp_dir.path }}/{{ rulebases_siebel_web_determinations.pkg }}"
+            dest: "{{ rulebases_siebel_web_determinations.dest }}"
+        when: exists_dest_siebel_web_determinations.stat is defined and exists_dest_siebel_web_determinations.stat.exists == true
+
+    always:
+      - name: Delete temporary staging directory
+        file:
+            state: absent
+            path: "{{ temp_dir.path }}"

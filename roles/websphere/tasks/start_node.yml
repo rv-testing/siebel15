@@ -1,0 +1,11 @@
+---
+- name:                 "Verify if pid file"
+  shell:                ps -p `cat "{{ profile_directory }}/logs/nodeagent/nodeagent.pid"`
+  register:             nodeagent_is_running
+  ignore_errors:        true
+
+- name:                 "Start Node Agent"
+  command:              "{{ was_bin_directory }}/startNode.sh"
+  register:             cout
+  changed_when:         cout.rc == 0
+  when:                 nodeagent_is_running.rc != 0

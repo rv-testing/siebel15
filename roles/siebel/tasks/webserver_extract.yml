@@ -1,0 +1,26 @@
+---
+
+- name:          Is siebweb webserver installed?
+  stat:
+    path:        "{{ siebweb_webserver }}/"
+  register:      siebweb_webserver_installed
+  
+- name:           Download siebweb Webserver file
+  get_url:
+    url:          "{{ siebel_repository_url }}{{ siebweb_webserver_zip }}"
+    dest:         "{{ siebweb_sfw }}/{{ siebweb_webserver_zip }}"
+    mode:         0755
+  when:           siebweb_webserver_installed.stat.exists == false
+  
+- name:           Extract siebweb Webserver file
+  unarchive:
+    src:          "{{ siebweb_sfw }}/{{ siebweb_webserver_zip }}"
+    dest:         "{{ siebweb_sfw }}/"
+    copy:         no
+  when:           siebweb_webserver_installed.stat.exists == false
+  
+      
+  
+- debug:
+    msg:          "!!!!!!!!!!!!!!!!!Webserver path EXIST!!!!!!!!!!!!!!!!!"  
+  when:           siebweb_webserver_installed.stat.exists == true  

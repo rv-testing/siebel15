@@ -1,0 +1,41 @@
+---
+- name: variable precedence test
+  hosts: ebs_linux
+  tasks:
+    - include_vars:
+        file: "{{ item }}"
+      with_items:
+        - "group_vars/{{ env }}/vault.yml"
+        - "group_vars/{{ env }}/vars.yml"
+  tags: always
+
+- name: Create Pre-requisites
+  hosts: ebs_linux
+  become_user: "{{super_user}}"
+  any_errors_fatal: True
+  roles:
+    - common
+  vars:
+    create_full_filesystem: False
+    app_user_create: False
+    download_library_yum_6: False
+    
+- name: Add application server in hosts file
+  hosts: ebs_linux
+  become_user: "{{super_user}}"
+  any_errors_fatal: True
+  roles: 
+    - ohs
+  vars: 
+    app_url_hosts: True
+  tags: config_ohs
+
+- name: configure OHS server
+  hosts: ebs_linux
+  become_user: "{{app_user}}"
+  any_errors_fatal: True
+  roles: 
+    - ohs
+  vars: 
+    config_ohs: True
+  tags: config_ohs

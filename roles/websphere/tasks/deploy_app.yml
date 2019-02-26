@@ -1,0 +1,46 @@
+---
+- name: Create script directory
+  file:
+    path: "{{ deploy_scripts }}"
+    state: directory
+    mode: 0750
+
+- name: Pre-req check for the existing destination directory of the scripts
+  register: exists_deploy_scripts
+  stat: 
+    path: "{{ deploy_scripts }}"
+     
+- name: Create temporary staging directory
+  register: temp_dir
+  tempfile:
+     state: directory
+
+- name: Get the repo package
+  git:
+    repo:    "{{ rulebases_git_repo }}"    
+    version: "{{ rulebases_git_head }}" 
+    dest:    "{{ temp_dir.path }}"
+      
+- name: Copy WAR files
+  copy: 
+     remote_src: yes
+     src:     "{{ temp_dir.path }}/{{ vsts_git_path }}{{ item.deploy_warName }}"
+     dest:    "{{ deploy_scripts }}"
+  with_items: "{{ deploy_apps }}"
+  when: exists_deploy_scripts is defined and exists_deploy_scripts.stat.exists == true
+
+- name: Delete temporary staging directory
+  file:
+     state: absent
+     path:  "{{ temp_dir.path }}"
+      
+- name: Building the deploy script
+  template:
+    src:  was_deploy_app.j2
+    dest: "{{ deploy_scripts }}/was_deploy_app.py"
+  changed_when: false
+
+- name: Execute the deploy script
+  shell: "{{ was_install_location }}/bin/wsadmin.sh -lang jython -username {{ websphere_admin }} -password {{ websphere_admin_pwd }} -f {{ deploy_scripts }}/was_deploy_app.py"
+  changed_when: false
+  ignore_errors: true
